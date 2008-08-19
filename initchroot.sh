@@ -81,6 +81,29 @@ rm -f ${ROOT_DIR}/${k}
 # install packages
 (chroot ${ROOT_DIR} aptitude install -y `cat package_list`)
 
+# configure X
+cat >${ROOT_DIR}/etc/X11/xorg.conf<<EOF
+# xorg.conf (X.Org X Window System server configuration file)
+
+Section "Monitor"
+	Identifier "Configured Monitor"
+	HorizSync 30-67
+	VertRefresh 48-52
+	DisplaySize 152 114
+	Mode "1200x900"
+		DotClock 57.275
+		HTimings 1200 1208 1216 1240
+		VTimings 900 905 908 912
+		Flags "-HSync" "-VSync"
+	EndMode
+EndSection
+
+Section "Screen"
+	Identifier "Default Screen"
+	Monitor "Configured Monitor"
+EndSection
+EOF
+
 # add default user
 (chroot ${ROOT_DIR} useradd -s /bin/bash ${DEFUSER})
 (chroot ${ROOT_DIR} passwd -d ${DEFUSER})
