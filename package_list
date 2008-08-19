@@ -2,12 +2,14 @@ libertas-firmware
 xserver-xorg-core
 xserver-xorg-input-kbd
 xserver-xorg-input-mouse
+xserver-xorg-input-evdev
 xserver-xorg-video-geode
 xfonts-100dpi
 openssh-client
 openntpd
 diff
 bzip2
+menu
 aspell-en
 info
 manpages-dev
@@ -22,6 +24,7 @@ gnome-mount
 gnome-system-tools
 gnome-themes
 gnome-utils
+gconf-editor
 network-manager-gnome
 claws-mail
 epiphany-browser
