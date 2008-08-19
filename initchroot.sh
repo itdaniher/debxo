@@ -48,6 +48,15 @@ debootstrap --arch i386 lenny ${ROOT_DIR} http://http.us.debian.org/debian
 mount -t proc proc ${ROOT_DIR}/proc
 mount -t devpts devpts ${ROOT_DIR}/dev/pts
 
+# allow daemons to be installed without breaking
+mv ${ROOT_DIR}/sbin/start-stop-daemon ${ROOT_DIR}/sbin/start-stop-daemon.REAL
+cat >${ROOT_DIR}/sbin/start-stop-daemon<<EOF
+#!/bin/sh
+echo
+echo "Warning: Fake start-stop-daemon called, doing nothing"
+EOF
+chmod 755 ${ROOT_DIR}/sbin/start-stop-daemon
+
 # set up apt
 export DEBIAN_FRONTEND=noninteractive
 export DEBCONF_PRIORITY=critical
@@ -84,6 +93,7 @@ rm -f ${ROOT_DIR}/${k}
 echo "${DEFUSER} ALL=(ALL) ALL" >> ${ROOT_DIR}/etc/sudoers
 
 # done, clean up
+mv ${ROOT_DIR}/sbin/start-stop-daemon.REAL ${ROOT_DIR}/sbin/start-stop-daemon
 (chroot ${ROOT_DIR} aptitude clean)
 umount ${ROOT_DIR}/proc
 umount ${ROOT_DIR}/dev/pts
