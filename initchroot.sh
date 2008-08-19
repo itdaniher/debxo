@@ -47,6 +47,7 @@ check_for_cmds debootstrap || exit 1
 debootstrap --arch i386 lenny ${ROOT_DIR} http://http.us.debian.org/debian
 mount -t proc proc ${ROOT_DIR}/proc
 mount -t devpts devpts ${ROOT_DIR}/dev/pts
+mkdir ${ROOT_DIR}/ofw
 
 # allow daemons to be installed without breaking
 mv ${ROOT_DIR}/sbin/start-stop-daemon ${ROOT_DIR}/sbin/start-stop-daemon.REAL
@@ -73,10 +74,25 @@ EOF
 # set up base system
 echo "en_US.UTF-8 UTF-8" >${ROOT_DIR}/etc/locale.gen
 (chroot ${ROOT_DIR} aptitude install -y locales)
+
 k=$(wget -O- http://queued.mit.edu/~dilinger/builds-master/ | sed -ne 's/.*href="\(.\+\)_i386.deb".*/\1_i386.deb/p' | tail -n1)
 wget -O ${ROOT_DIR}/${k} http://queued.mit.edu/~dilinger/builds-master/${k}
 (chroot ${ROOT_DIR} dpkg -i /${k})
 rm -f ${ROOT_DIR}/${k}
+
+echo "debxo" > ${ROOT_DIR}/etc/hostname
+cat >${ROOT_DIR}/etc/hosts<<EOF
+127.0.0.1 localhost.localdomain localhost
+127.0.0.1 debxo
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ff02::3 ip6-allhosts
+EOF
 
 # install packages
 (chroot ${ROOT_DIR} aptitude install -y `cat package_list`)
