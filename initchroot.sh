@@ -105,6 +105,7 @@ EndSection
 EOF
 
 # add default user
+(chroot ${ROOT_DIR} passwd -l root)
 (chroot ${ROOT_DIR} useradd -s /bin/bash ${DEFUSER})
 (chroot ${ROOT_DIR} passwd -d ${DEFUSER})
 (chroot ${ROOT_DIR} adduser ${DEFUSER} cdrom)
