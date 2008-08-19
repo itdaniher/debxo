@@ -121,8 +121,9 @@ EndSection
 EOF
 
 # add default user
+rm -rf ${ROOT_DIR}/home/*; 	# i have no idea what's adding this crap...
 (chroot ${ROOT_DIR} passwd -l root)
-(chroot ${ROOT_DIR} useradd -s /bin/bash ${DEFUSER})
+(chroot ${ROOT_DIR} useradd -s /bin/bash --create-home ${DEFUSER})
 (chroot ${ROOT_DIR} passwd -d ${DEFUSER})
 (chroot ${ROOT_DIR} adduser ${DEFUSER} cdrom)
 (chroot ${ROOT_DIR} adduser ${DEFUSER} audio)
