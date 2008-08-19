@@ -15,8 +15,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
-#
-
 
 IMG_NAME="DebOLPC"
 ROOT_SIZE="512"
@@ -24,22 +22,7 @@ IMG_LABEL="DebOLPC"
 ROOT_DIR=""
 CRCIMG="./crcimg.pl"
 
-
-PREREQ_CMDS="losetup dd parted mke2fs tune2fs grub"
-
-check_for_cmds()
-{
-	err=0
-	for cmd in $PREREQ_CMDS; do
-		which $cmd >/dev/null || {
-			echo "Missing required command '$cmd'!" 1>&2
-			err=1
-		}
-	done
-	if [ "$err" = 1 ]; then
-		exit 1
-	fi
-}
+. functions.sh
 
 # @img - fs image to attach loop device to
 # @offset - if the image is partitioned, the offset to attach at
@@ -112,23 +95,6 @@ mk_bootable_img()
 	parted -s "$img" "set 1 boot on"
 }
 
-# @mntpt - path to mounted root directory
-# @fstype - the root filesystem type (in a form that 'mount' understands)
-mk_fstab()
-{
-	mntpt="$1"
-	fstype="$2"
-
-	cat >${mntpt}/etc/fstab<<EOF
-LABEL=OLPCRoot  /               $fstype defaults,noatime        1 1
-devpts          /dev/pts        devpts  gid=5,mode=620          0 0
-tmpfs           /dev/shm        tmpfs   defaults,size=15%       0 0
-proc            /proc           proc    defaults                0 0
-sysfs           /sys            sysfs   defaults                0 0
-EOF
-
-}
-
 # @img - image name
 # @mntpt - path to mounted root directory
 grub_install()
@@ -184,19 +150,10 @@ mk_ext3_fs()
 	# populate the filesystem
 	mk_mount "$img" "ext3" "$partition_start"
 	cp -ra "$root_dir"/* "$MOUNT_POINT" || true
-	mk_fstab "$MOUNT_POINT" "ext3"
+	create_fstab "$MOUNT_POINT" "ext3"
 	grub_install "$img" "$MOUNT_POINT"
 	rm_mount "$MOUNT_POINT"
 }
-
-create_jffs2_img()
-{
-	mkfs.jffs2 -n -e128KiB -r "$1" -o "${IMG_NAME}.pre"
-	sumtool -n -p -e 128KiB -i "${IMG_NAME}.pre" -o "${IMG_NAME}.jffs2"
-	rm -f "${IMG_NAME}.pre"
-	$CRCIMG < ${IMG_NAME}.jffs2 > ${IMG_NAME}.jffs2.crc
-}
-
 
 usage()
 {
@@ -211,7 +168,7 @@ usage()
 	exit 1
 }
 
-check_for_cmds
+check_for_cmds losetup dd parted mke2fs tune2fs grub || exit 1
 
 while test $# != 0
 do
@@ -263,5 +220,4 @@ mk_ext3_fs "${IMG_NAME}.ext3.img" "$IMG_LABEL" "$ROOT_DIR"
 
 #mount ${IMG_NAME}.ext3 $MOUNT_POINT -o loop,offset=$OS_PART1_BEGIN -t ext3
 #cp -r "$ROOT_DIR"/* $MOUNT_POINT
-#create_jffs2_img $MOUNT_POINT
 #umount $MOUNT_POINT

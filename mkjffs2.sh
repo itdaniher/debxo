@@ -39,7 +39,7 @@ if [ ! -d "${ROOT_DIR}" ]; then
 	usage
 fi
 
-check_for_cmds mkfs.jffs2 sumtool
+check_for_cmds mkfs.jffs2 sumtool || exit 1
 create_fstab ${ROOT_DIR} jffs2
 create_ofwboot ${ROOT_DIR} jffs2
 
