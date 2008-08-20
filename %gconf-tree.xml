@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<gconf>
+	<dir name="desktop">
+		<dir name="gnome">
+			<dir name="background">
+				<entry name="picture_filename" type="string">
+					<stringvalue>/usr/share/pixmaps/backgrounds/gnome/nature/FreshFlower.jpg</stringvalue>
+				</entry>
+			</dir>
+			<dir name="interface">
+				<entry name="monospace_font_name" type="string">
+					<stringvalue>Monospace 6</stringvalue>
+				</entry>
+				<entry name="document_font_name" type="string">
+					<stringvalue>Sans 6</stringvalue>
+				</entry>
+				<entry name="font_name" type="string">
+					<stringvalue>Sans 6</stringvalue>
+				</entry>
+			</dir>
+		</dir>
+	</dir>
+	<dir name="apps">
+		<dir name="metacity">
+			<dir name="general">
+				<entry name="titlebar_font" type="string">
+					<stringvalue>Sans Bold 6</stringvalue>
+				</entry>
+			</dir>
+		</dir>
+		<dir name="nautilus">
+			<dir name="preferences">
+				<entry name="desktop_font" type="string">
+					<stringvalue>Sans 6</stringvalue>
+				</entry>
+			</dir>
+		</dir>
+	</dir>
+</gconf>

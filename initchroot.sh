@@ -120,6 +120,15 @@ Section "Screen"
 EndSection
 EOF
 
+# configure gdm, gnome
+sed -i 's_\[daemon\]_\[daemon\]\n\nGreeter=/usr/lib/gdm/gdmlogin\n\nAutomaticLoginEnable=true\n\nAutomaticLogin=olpc_' ${ROOT_DIR}/etc/gdm/gdm.conf
+cat >${ROOT_DIR}/etc/gconf/2/local-defaults.path<<EOF
+# DebXO defaults (customized for the XO-1's display
+xml:readonly:/etc/gconf/debxo.xml.defaults
+EOF
+mkdir -p ${ROOT_DIR}/etc/gconf/debxo.xml.defaults
+cp %gconf-tree.xml ${ROOT_DIR}/etc/gconf/debxo.xml.defaults/
+
 # add default user
 rm -rf ${ROOT_DIR}/home/*; 	# i have no idea what's adding this crap...
 (chroot ${ROOT_DIR} passwd -l root)
