@@ -5,6 +5,8 @@ xserver-xorg-input-mouse
 xserver-xorg-input-evdev
 xserver-xorg-video-geode
 xfonts-100dpi
+xfonts-scalable
+xfonts-base
 openssh-client
 wireless-tools
 openntpd
