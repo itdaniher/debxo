@@ -61,9 +61,11 @@ create_ofwboot()
 	if [ "${fstype}" = "jffs2" ]; then
 		r=mtd0
 		rfs="rootfstype=jffs2"
+		dev=nand
 	else
 		r=/dev/sda1
 		rfs=""
+		dev=disk
 	fi
 
 	cat >${mntpt}/boot/olpc.fth<<EOF
@@ -72,10 +74,10 @@ create_ofwboot()
 " ro root=${r} ${rfs} fbcon=font:SUN12x22" to boot-file
 game-key-mask h# 80 and if
 	\\ boot from backup kernel
-	" nand:\\vmlinuz.old" to boot-device
+	" ${dev}:\\vmlinuz.old" to boot-device
 else
 	\\ boot from regular kernel
-	" nand:\\vmlinuz" to boot-device
+	" ${dev}:\\vmlinuz" to boot-device
 then
 boot
 EOF
