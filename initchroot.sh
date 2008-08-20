@@ -130,7 +130,6 @@ mkdir -p ${ROOT_DIR}/etc/gconf/debxo.xml.defaults
 cp %gconf-tree.xml ${ROOT_DIR}/etc/gconf/debxo.xml.defaults/
 
 # add default user
-rm -rf ${ROOT_DIR}/home/*; 	# i have no idea what's adding this crap...
 (chroot ${ROOT_DIR} passwd -l root)
 (chroot ${ROOT_DIR} useradd -s /bin/bash --create-home ${DEFUSER})
 (chroot ${ROOT_DIR} passwd -d ${DEFUSER})
@@ -147,3 +146,5 @@ mv ${ROOT_DIR}/sbin/start-stop-daemon.REAL ${ROOT_DIR}/sbin/start-stop-daemon
 (chroot ${ROOT_DIR} aptitude clean)
 umount ${ROOT_DIR}/proc
 umount ${ROOT_DIR}/dev/pts
+rm -rf ${ROOT_DIR}/home/*; 	# i have no idea what's adding this crap...
+rm -f ${ROOT_DIR}/var/cache/apt/*.bin
