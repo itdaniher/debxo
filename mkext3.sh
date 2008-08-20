@@ -16,11 +16,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-IMG_NAME="DebOLPC"
-ROOT_SIZE="512"
-IMG_LABEL="DebOLPC"
+IMG_NAME="DebXO"
+ROOT_SIZE="2048"
+IMG_LABEL="DebXO"
 ROOT_DIR=""
-CRCIMG="./crcimg.pl"
 
 . functions.sh
 
@@ -79,7 +78,7 @@ rm_mount()
 
 # @img - image name to create
 # @size - image size
-mk_bootable_img()
+create_bootable_img()
 {
 	img="$1"
 	size="$2"
@@ -113,7 +112,7 @@ color cyan/blue white/blue
 
 title		$IMG_LABEL
 root		(hd0,0)
-kernel		/bzImage root=LABEL=${IMG_LABEL} rootfstype=ext3 ro
+kernel		/vmlinuz root=LABEL=${IMG_LABEL} ro
 boot
 EOF
 
@@ -168,8 +167,6 @@ usage()
 	exit 1
 }
 
-check_for_cmds losetup dd parted mke2fs tune2fs grub || exit 1
-
 while test $# != 0
 do
 	case $1 in
@@ -197,13 +194,6 @@ do
 	shift
 done
 
-if [ "$(id -u)" != "0" ]; then
-	echo "" 1>&2
-	echo "*** Error: must be run as root!" 1>&2
-	echo "" 1>&2
-	exit 2
-fi
-
 if [ "$ROOT_DIR" = "" ]; then
 	echo "" 1>&2
 	echo "*** No root directory specified!" 1>&2
@@ -215,8 +205,12 @@ if [ ! -d "$ROOT_DIR" ]; then
 	usage
 fi
 
-mk_bootable_img "${IMG_NAME}.ext3.img" "$ROOT_SIZE"
-mk_ext3_fs "${IMG_NAME}.ext3.img" "$IMG_LABEL" "$ROOT_DIR"
+check_for_cmds losetup parted mke2fs tune2fs grub || exit 1
+create_fstab ${ROOT_DIR} ext3
+create_ofwboot ${ROOT_DIR} ext3
+
+create_bootable_img ${IMG_NAME} ${ROOT_SIZE}
+mk_ext3_fs ${IMG_NAME} ${IMG_LABEL} ${ROOT_DIR}
 
 #mount ${IMG_NAME}.ext3 $MOUNT_POINT -o loop,offset=$OS_PART1_BEGIN -t ext3
 #cp -r "$ROOT_DIR"/* $MOUNT_POINT
