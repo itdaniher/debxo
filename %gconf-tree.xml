@@ -35,5 +35,19 @@
 				</entry>
 			</dir>
 		</dir>
+		<dir name="epiphany">
+			<dir name="web">
+				<entry name="variable_font_size_x-western" type="int" value="6">
+				</entry>
+				<entry name="fixed_font_size_x-western" type="int" value="6">
+				</entry>
+				<entry name="minimum_font_size_x-western" type="int" value="6">
+				</entry>
+				<entry name="minimum_font_size" type="int" value="6">
+				</entry>
+				<entry name="use_own_fonts" type="bool" value="true">
+				</entry>
+			</dir>
+		</dir>
 	</dir>
 </gconf>
