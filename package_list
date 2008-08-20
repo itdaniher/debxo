@@ -6,6 +6,7 @@ xserver-xorg-input-evdev
 xserver-xorg-video-geode
 xfonts-100dpi
 openssh-client
+wireless-tools
 openntpd
 diff
 bzip2
