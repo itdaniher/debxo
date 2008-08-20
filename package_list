@@ -11,6 +11,7 @@ openssh-client
 wireless-tools
 openntpd
 diff
+less
 bzip2
 menu
 aspell-en
