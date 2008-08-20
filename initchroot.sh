@@ -45,9 +45,11 @@ check_for_cmds debootstrap || exit 1
 
 # create chroot
 debootstrap --arch i386 lenny ${ROOT_DIR} http://http.us.debian.org/debian
+mkdir ${ROOT_DIR}/ofw
+mkdir ${ROOT_DIR}/var/cache/apt/cache
 mount -t proc proc ${ROOT_DIR}/proc
 mount -t devpts devpts ${ROOT_DIR}/dev/pts
-mkdir ${ROOT_DIR}/ofw
+mount -t tmpfs tmpfs ${ROOT_DIR}/var/cache/apt/cache
 
 # allow daemons to be installed without breaking
 mv ${ROOT_DIR}/sbin/start-stop-daemon ${ROOT_DIR}/sbin/start-stop-daemon.REAL
@@ -58,12 +60,18 @@ echo "Warning: Fake start-stop-daemon called, doing nothing"
 EOF
 chmod 755 ${ROOT_DIR}/sbin/start-stop-daemon
 
-# set up apt
+# set up apt (working around #314334)
 export DEBIAN_FRONTEND=noninteractive
 export DEBCONF_PRIORITY=critical
 cat >${ROOT_DIR}/etc/apt/apt.conf<<EOF
 Acquire::Pdiffs "false";
 APT::Install-Recommends "false";
+Dir {
+	Cache "var/cache/apt/" {
+		srcpkgcache "cache/srcpkgcache.bin";
+		pkgcache "cache/pkgcache.bin";
+	};
+};
 EOF
 cat >${ROOT_DIR}/etc/apt/sources.list<<EOF
 deb http://http.us.debian.org/debian ${DIST} main contrib non-free
@@ -147,4 +155,4 @@ mv ${ROOT_DIR}/sbin/start-stop-daemon.REAL ${ROOT_DIR}/sbin/start-stop-daemon
 (chroot ${ROOT_DIR} aptitude clean)
 umount ${ROOT_DIR}/proc
 umount ${ROOT_DIR}/dev/pts
-rm -f ${ROOT_DIR}/var/cache/apt/*.bin
+umount ${ROOT_DIR}/var/cache/apt/cache
