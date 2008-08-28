@@ -18,22 +18,70 @@
 
 DIST=lenny
 DEFUSER=olpc
+PLIST=package_list
+MIRROR=http://http.us.debian.org/debian/
+OTHERMIRROR=
 
 . functions.sh
 
 usage()
 {
 	echo "" 1>&2
-	echo "Usage: $0 <root directory>" 1>&2
+	echo "Usage: $0 [<options>] <root directory>" 1>&2
+	echo "" 1>&2
+	echo "Options:" 1>&2
+	echo "  --distribution <name>     Which distribution to use" 1>&2
+	echo "  --user <user>             Username for default user" 1>&2
+	echo "  --package-list <list>     File containing package list" 1>&2
+	echo "  --mirror <url>            Main Mirror URL prefix" 1>&2
+	echo "  --othermirror <line>      An additional sources.list line" 1>&2
 	echo "" 1>&2
 	exit 1
 }
 
-if [ "$#" != "1" ]; then
+while test $# != 0
+do
+	case $1 in
+	--distribution)
+		DIST=$2
+		shift
+		if [ -z "${OTHERMIRROR}" ]; then
+		    OTHERMIRROR="deb http://security.debian.org/ ${DIST}/updates main contrib non-free"
+		fi
+		;;
+	--user)
+		DEFUSER=$2
+		shift
+		;;
+	--package-list)
+		PLIST=$2
+		shift
+		;;
+	--mirror)
+		MIRROR=$2
+		shift
+		;;
+	--othermirror)
+		OTHERMIRROR=$2
+		shift
+		;;
+	*)
+		if [ "$#" != "1" ]; then
+			echo "Unknown option $1" 1>&2
+			usage
+		else
+			ROOT_DIR="$1"
+		fi
+		;;
+	esac
+	shift
+done
+
+if [ "$ROOT_DIR" = "" ]; then
+	echo "" 1>&2
+	echo "*** No root directory specified!" 1>&2
 	usage
 fi
-
-ROOT_DIR=$1
 
 if [ -d "${ROOT_DIR}" ]; then
 	echo "" 1>&2
@@ -43,13 +91,15 @@ fi
 
 check_for_cmds debootstrap || exit 1
 
+if [ -z "${OTHERMIRROR}" ]; then
+    OTHERMIRROR="deb http://security.debian.org/ ${DIST}/updates main contrib non-free"
+fi
+
 # create chroot
-debootstrap --arch i386 lenny ${ROOT_DIR} http://http.us.debian.org/debian
+debootstrap --arch i386 ${DIST} ${ROOT_DIR} ${MIRROR}
 mkdir ${ROOT_DIR}/ofw
 mkdir ${ROOT_DIR}/var/cache/apt/cache
-mount -t proc proc ${ROOT_DIR}/proc
-mount -t devpts devpts ${ROOT_DIR}/dev/pts
-mount -t tmpfs tmpfs ${ROOT_DIR}/var/cache/apt/cache
+chroot_internal_mounts ${ROOT_DIR}
 
 # allow daemons to be installed without breaking
 mv ${ROOT_DIR}/sbin/start-stop-daemon ${ROOT_DIR}/sbin/start-stop-daemon.REAL
@@ -74,8 +124,8 @@ Dir {
 };
 EOF
 cat >${ROOT_DIR}/etc/apt/sources.list<<EOF
-deb http://http.us.debian.org/debian ${DIST} main contrib non-free
-deb http://security.debian.org/ ${DIST}/updates main contrib non-free
+deb ${MIRROR} ${DIST} main contrib non-free
+${OTHERMIRROR}
 EOF
 (chroot ${ROOT_DIR} aptitude update)
 
@@ -84,7 +134,9 @@ echo "en_US.UTF-8 UTF-8" >${ROOT_DIR}/etc/locale.gen
 (chroot ${ROOT_DIR} aptitude install -y locales)
 
 k=$(wget -O- http://queued.mit.edu/~dilinger/builds-master/ | sed -ne 's/.*href="\(.\+\)_i386.deb".*/\1_i386.deb/p' | tail -n1)
-wget -O ${ROOT_DIR}/${k} http://queued.mit.edu/~dilinger/builds-master/${k}
+mkdir -p cache
+wget --continue -O cache/${k} http://queued.mit.edu/~dilinger/builds-master/${k}
+cp cache/${k} ${ROOT_DIR}/${k} 
 (chroot ${ROOT_DIR} dpkg -i /${k})
 rm -f ${ROOT_DIR}/${k}
 
@@ -103,10 +155,11 @@ ff02::3 ip6-allhosts
 EOF
 
 # install packages
-(chroot ${ROOT_DIR} aptitude install -y `cat package_list`)
+(chroot ${ROOT_DIR} aptitude install -y `cat ${PLIST}`)
 
 # configure X
-cat >${ROOT_DIR}/etc/X11/xorg.conf<<EOF
+if [ -d /etc/X11 ]; then
+    cat >${ROOT_DIR}/etc/X11/xorg.conf<<EOF
 # xorg.conf (X.Org X Window System server configuration file)
 
 Section "Monitor"
@@ -127,15 +180,25 @@ Section "Screen"
 	Monitor "Configured Monitor"
 EndSection
 EOF
+fi
+
+# configure kdm, kde
+if [ -d ${ROOT_DIR}/etc/kde3/kdm ]; then
+    sed --in-place 's/AllowNullPasswd=false/AllowNullPasswd=true/;s/#AutoLoginEnable=true/AutoLoginEnable=true/;s/#AutoLoginUser=fred/AutoLoginUser=olpc/' ${ROOT_DIR}/etc/kde3/kdm/kdmrc
+fi
 
 # configure gdm, gnome
-sed -i 's_\[daemon\]_\[daemon\]\n\nGreeter=/usr/lib/gdm/gdmlogin\n\nAutomaticLoginEnable=true\n\nAutomaticLogin=olpc_' ${ROOT_DIR}/etc/gdm/gdm.conf
-cat >${ROOT_DIR}/etc/gconf/2/local-defaults.path<<EOF
+if [ -d ${ROOT_DIR}/etc/gdm ]; then
+    sed -i 's_\[daemon\]_\[daemon\]\n\nGreeter=/usr/lib/gdm/gdmlogin\n\nAutomaticLoginEnable=true\n\nAutomaticLogin=olpc_' ${ROOT_DIR}/etc/gdm/gdm.conf
+fi
+if [ -d ${ROOT_DIR}/etc/gconf/2 ]; then
+    cat >${ROOT_DIR}/etc/gconf/2/local-defaults.path<<EOF
 # DebXO defaults (customized for the XO-1's display
 xml:readonly:/etc/gconf/debxo.xml.defaults
 EOF
-mkdir -p ${ROOT_DIR}/etc/gconf/debxo.xml.defaults
-cp %gconf-tree.xml ${ROOT_DIR}/etc/gconf/debxo.xml.defaults/
+    mkdir -p ${ROOT_DIR}/etc/gconf/debxo.xml.defaults
+    cp %gconf-tree.xml ${ROOT_DIR}/etc/gconf/debxo.xml.defaults/
+fi
 
 # add default user
 (chroot ${ROOT_DIR} passwd -l root)
@@ -148,11 +211,10 @@ rm -rf ${ROOT_DIR}/home/*; 	# i have no idea what's adding this crap...
 (chroot ${ROOT_DIR} adduser ${DEFUSER} plugdev)
 (chroot ${ROOT_DIR} adduser ${DEFUSER} netdev)
 (chroot ${ROOT_DIR} adduser ${DEFUSER} powerdev)
+(chroot ${ROOT_DIR} adduser ${DEFUSER} floppy)
 echo "${DEFUSER} ALL=(ALL) ALL" >> ${ROOT_DIR}/etc/sudoers
 
 # done, clean up
 mv ${ROOT_DIR}/sbin/start-stop-daemon.REAL ${ROOT_DIR}/sbin/start-stop-daemon
 (chroot ${ROOT_DIR} aptitude clean)
-umount ${ROOT_DIR}/proc
-umount ${ROOT_DIR}/dev/pts
-umount ${ROOT_DIR}/var/cache/apt/cache
+chroot_internal_umounts ${ROOT_DIR}
