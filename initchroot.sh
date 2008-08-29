@@ -184,12 +184,12 @@ fi
 
 # configure kdm, kde
 if [ -d ${ROOT_DIR}/etc/kde3/kdm ]; then
-    sed --in-place 's/AllowNullPasswd=false/AllowNullPasswd=true/;s/#AutoLoginEnable=true/AutoLoginEnable=true/;s/#AutoLoginUser=fred/AutoLoginUser=olpc/' ${ROOT_DIR}/etc/kde3/kdm/kdmrc
+    sed --in-place "s/AllowNullPasswd=false/AllowNullPasswd=true/;s/#AutoLoginEnable=true/AutoLoginEnable=true/;s/#AutoLoginUser=fred/AutoLoginUser=${DEFUSER}/" ${ROOT_DIR}/etc/kde3/kdm/kdmrc
 fi
 
 # configure gdm, gnome
 if [ -d ${ROOT_DIR}/etc/gdm ]; then
-    sed -i 's_\[daemon\]_\[daemon\]\n\nGreeter=/usr/lib/gdm/gdmlogin\n\nAutomaticLoginEnable=true\n\nAutomaticLogin=olpc_' ${ROOT_DIR}/etc/gdm/gdm.conf
+    sed -i "s_\[daemon\]_\[daemon\]\n\nGreeter=/usr/lib/gdm/gdmlogin\n\nAutomaticLoginEnable=true\n\nAutomaticLogin=${DEFUSER}_" ${ROOT_DIR}/etc/gdm/gdm.conf
 fi
 if [ -d ${ROOT_DIR}/etc/gconf/2 ]; then
     cat >${ROOT_DIR}/etc/gconf/2/local-defaults.path<<EOF
