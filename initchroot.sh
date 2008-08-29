@@ -158,7 +158,7 @@ EOF
 (chroot ${ROOT_DIR} aptitude install -y `cat ${PLIST}`)
 
 # configure X
-if [ -d /etc/X11 ]; then
+if [ -d ${ROOT_DIR}/etc/X11 ]; then
     cat >${ROOT_DIR}/etc/X11/xorg.conf<<EOF
 # xorg.conf (X.Org X Window System server configuration file)
 
