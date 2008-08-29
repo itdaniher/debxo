@@ -18,7 +18,7 @@
 
 DIST=lenny
 DEFUSER=olpc
-PLIST=package_list
+PLIST=gnome.packages
 MIRROR=http://http.us.debian.org/debian/
 OTHERMIRROR=
 
