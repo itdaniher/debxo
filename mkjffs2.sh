@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 #
 # Copyright © 2008  Andres Salomon <dilinger@queued.net>
 #
@@ -33,6 +33,12 @@ fi
 ROOT_DIR=$1
 IMG_NAME=$2
 
+if [ "${IMG_NAME}" == "${IMG_NAME/.img/.crc}" ]; then
+    CRC_NAME=${IMG_NAME}.crc
+else
+    CRC_NAME=${IMG_NAME/.img/.crc}
+fi
+
 if [ ! -d "${ROOT_DIR}" ]; then
 	echo "" 1>&2
 	echo "*** Unable to find root directory!" 1>&2
@@ -46,4 +52,4 @@ create_ofwboot ${ROOT_DIR} jffs2
 mkfs.jffs2 -n -e128KiB -r ${ROOT_DIR} -o ${IMG_NAME}.pre
 sumtool -n -p -e 128KiB -i ${IMG_NAME}.pre -o ${IMG_NAME}
 rm -f ${IMG_NAME}.pre
-./crcimg.pl < ${IMG_NAME} > ${IMG_NAME}.crc
+./crcimg.pl < ${IMG_NAME} > ${CRC_NAME}
