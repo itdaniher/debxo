@@ -1,0 +1,25 @@
+xodist - Debian image builder for OLPC XO
+
+See *.packages for other image flavours, and change "kde" below to the
+flavour.  See README.approx before starting if you would like to cache
+the packages downloaded.
+
+How to use xodist to generate a Debian KDE image:
+
+1.  build the root filesystem,
+
+	sudo ./initchroot.sh --package-list kde.packages kde.root
+
+2.  make the JFFS2 filesystem,
+
+	sudo ./mkjffs2.sh kde.root kde.img
+
+3.  copy the kde.img and kde.crc files to a thumb drive,
+
+	cp kde.img kde.crc /mnt/
+
+4.  boot an XO into OFW, then type:
+
+        copy-nand u:\kde.img
+
+Warning: this erases everything on the XO.
