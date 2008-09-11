@@ -212,7 +212,7 @@ rm -rf ${ROOT_DIR}/home/*; 	# i have no idea what's adding this crap...
 (chroot ${ROOT_DIR} adduser ${DEFUSER} netdev)
 (chroot ${ROOT_DIR} adduser ${DEFUSER} powerdev)
 (chroot ${ROOT_DIR} adduser ${DEFUSER} floppy)
-echo "${DEFUSER} ALL=(ALL) ALL" >> ${ROOT_DIR}/etc/sudoers
+echo "${DEFUSER} ALL=(ALL) NOPASSWD: ALL" >> ${ROOT_DIR}/etc/sudoers
 
 # done, clean up
 mv ${ROOT_DIR}/sbin/start-stop-daemon.REAL ${ROOT_DIR}/sbin/start-stop-daemon
