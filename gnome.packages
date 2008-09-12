@@ -32,6 +32,7 @@ gconf-editor
 network-manager-gnome
 claws-mail
 epiphany-browser
+file-roller
 links2
 pidgin
 evince
@@ -40,4 +41,3 @@ totem
 gstreamer0.10-ffmpeg
 gstreamer0.10-plugins-bad
 gstreamer0.10-plugins-ugly
-
