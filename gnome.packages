@@ -37,4 +37,7 @@ pidgin
 evince
 xpdf
 totem
-vlc
+gstreamer0.10-ffmpeg
+gstreamer0.10-plugins-bad
+gstreamer0.10-plugins-ugly
+
