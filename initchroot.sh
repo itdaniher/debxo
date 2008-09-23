@@ -140,6 +140,15 @@ cp cache/${k} ${ROOT_DIR}/${k}
 (chroot ${ROOT_DIR} dpkg -i /${k})
 rm -f ${ROOT_DIR}/${k}
 
+# ensure certain modules get loaded during boot
+cat >>${ROOT_DIR}/etc/modules<<EOF
+lxfb
+fbcon
+olpc_dcon
+scx200_acb
+i8042
+EOF
+
 echo "debxo" > ${ROOT_DIR}/etc/hostname
 cat >${ROOT_DIR}/etc/hosts<<EOF
 127.0.0.1 localhost.localdomain localhost
