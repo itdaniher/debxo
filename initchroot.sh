@@ -133,12 +133,16 @@ EOF
 echo "en_US.UTF-8 UTF-8" >${ROOT_DIR}/etc/locale.gen
 (chroot ${ROOT_DIR} aptitude install -y locales)
 
-k=$(wget -O- http://queued.mit.edu/~dilinger/builds-master/ | sed -ne 's/.*href="\(.\+\)_i386.deb".*/\1_i386.deb/p' | tail -n1)
+k="http://lunge.mit.edu/~dilinger/debxo-0.2/initramfs-tools_0.92l.1_all.deb 
+ http://lunge.mit.edu/~dilinger/debxo-0.2/linux-2.6.25.15_2.6.25.15-68_i386.deb"
 mkdir -p cache
-wget --continue -O cache/${k} http://queued.mit.edu/~dilinger/builds-master/${k}
-cp cache/${k} ${ROOT_DIR}/${k} 
-(chroot ${ROOT_DIR} dpkg -i /${k})
-rm -f ${ROOT_DIR}/${k}
+for i in $k; do
+	pkg=$(basename ${i})
+	wget --continue -O cache/${pkg} ${i}
+	cp cache/${pkg} ${ROOT_DIR}/${pkg} 
+	(chroot ${ROOT_DIR} dpkg -i /${pkg})
+	rm -f ${ROOT_DIR}/${k}
+done
 
 # ensure certain modules get loaded during boot
 cat >>${ROOT_DIR}/etc/modules<<EOF
