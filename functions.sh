@@ -72,7 +72,7 @@ create_ofwboot()
 	cat >${mntpt}/boot/olpc.fth<<EOF
 \\ OLPC boot script
 
-" ro root=${r} ${rfs} fbcon=font:SUN12x22" to boot-file
+" ro root=${r} ${rfs} video=lxfb fbcon=font:SUN12x22" to boot-file
 game-key-mask h# 80 and if
 	\\ boot from backup kernel
 	" ${dev}:\\vmlinuz.old" to boot-device
