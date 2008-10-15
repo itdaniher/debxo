@@ -1,4 +1,5 @@
 libertas-firmware
+initramfs-tools
 xserver-xorg-core
 xserver-xorg-input-kbd
 xserver-xorg-input-mouse
