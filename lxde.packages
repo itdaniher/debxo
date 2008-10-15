@@ -1,5 +1,3 @@
-libertas-firmware
-initramfs-tools
 xserver-xorg-core
 xserver-xorg-input-kbd
 xserver-xorg-input-mouse
@@ -9,11 +7,9 @@ xfonts-100dpi
 xfonts-scalable
 xfonts-base
 openssh-client
-wireless-tools
 openntpd
 menu
 aspell-en
-sudo
 big-cursor
 xinit
 lxde
