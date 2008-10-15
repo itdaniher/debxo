@@ -141,7 +141,7 @@ for i in $k; do
 	wget --continue -O cache/${pkg} ${i}
 	cp cache/${pkg} ${ROOT_DIR}/${pkg} 
 	(chroot ${ROOT_DIR} dpkg -i /${pkg})
-	rm -f ${ROOT_DIR}/${k}
+	rm -f ${ROOT_DIR}/${pkg}
 done
 
 # ensure certain modules get loaded during boot
