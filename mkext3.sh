@@ -16,9 +16,9 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-IMG_NAME="DebXO"
 ROOT_SIZE="2048"
 IMG_LABEL="DebXO"
+IMG_NAME=""
 ROOT_DIR=""
 
 . functions.sh
@@ -157,11 +157,10 @@ mk_ext3_fs()
 usage()
 {
 	echo "" 1>&2
-	echo "Usage: $0 [<options>] <root directory>" 1>&2
+	echo "Usage: $0 [<options>] <root directory> <img>" 1>&2
 	echo "" 1>&2
 	echo "Options:" 1>&2
 	echo "  -l <label>    Image label" 1>&2
-	echo "  -o <img>      Image (base) filename" 1>&2
 	echo "  -s <size>     Root filesystem size (in MB)" 1>&2
 	echo "" 1>&2
 	exit 1
@@ -174,20 +173,15 @@ do
 		IMG_LABEL=$2
 		shift
 		;;
-	-o)
-		IMG_NAME=$2
-		shift
-		;;
 	-s)
 		ROOT_SIZE=$2
 		shift
 		;;
 	*)
-		if [ "$#" != "1" ]; then
-			echo "Unknown option $1" 1>&2
-			usage
-		else
-			ROOT_DIR="$1"
+		ROOT_DIR="$1"
+		shift
+		if [ "$#" = "1" ]; then
+			IMG_NAME="$1"
 		fi
 		;;
 	esac
@@ -197,6 +191,11 @@ done
 if [ "$ROOT_DIR" = "" ]; then
 	echo "" 1>&2
 	echo "*** No root directory specified!" 1>&2
+	usage
+fi
+if [ "$IMG_NAME" = "" ]; then
+	echo "" 1>&2
+	echo "*** No image name specified!" 1>&2
 	usage
 fi
 if [ ! -d "$ROOT_DIR" ]; then
