@@ -134,6 +134,7 @@ echo "en_US.UTF-8 UTF-8" >${ROOT_DIR}/etc/locale.gen
 (chroot ${ROOT_DIR} aptitude install -y `cat base.packages`)
 
 k="http://lunge.mit.edu/~dilinger/debxo-0.2/initramfs-tools_0.92l.1_all.deb 
+ http://lunge.mit.edu/~dilinger/debxo-0.2/ofw-config_0.1_all.deb 
  http://lunge.mit.edu/~dilinger/debxo-0.2/linux-2.6.25.15_2.6.25.15-68_i386.deb"
 mkdir -p cache
 for i in $k; do
