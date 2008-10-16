@@ -62,25 +62,34 @@ create_ofwboot()
 	if [ "${fstype}" = "jffs2" ]; then
 		r=mtd0
 		rfs="rootfstype=jffs2"
-		dev=nand
 	else
 		r="LABEL=${IMG_LABEL}"
 		rfs=""
-		dev=disk
 	fi
 
 	cat >${mntpt}/boot/olpc.fth<<EOF
 \\ OLPC boot script
 
+\\ fetch the /chosen/bootpath property
+" /chosen" find-package  if                       ( phandle )
+  " bootpath" rot  get-package-property  0=  if   ( propval\$ )
+    get-encoded-string                            ( bootpath\$ )
+    [char] \ left-parse-string  2nip              ( dn\$ )
+
+    \ store the first part of bootpath (up to the '\\') in \$DN
+    dn-buf place                                  ( )
+  then
+then
+
 " ro root=${r} ${rfs} video=lxfb fbcon=font:SUN12x22" to boot-file
 game-key-mask h# 80 and if
 	\\ boot from backup kernel
-	" ${dev}:\\vmlinuz.old" to boot-device
-	" ${dev}:\\initrd.img.old" to ramdisk
+	" \${DN}\\vmlinuz.old" expand\$ to boot-device
+	" \${DN}\\initrd.img.old" expand\$ to ramdisk
 else
 	\\ boot from regular kernel
-	" ${dev}:\\vmlinuz" to boot-device
-	" ${dev}:\\initrd.img" to ramdisk
+	" \${DN}\\vmlinuz" expand\$ to boot-device
+	" \${DN}\\initrd.img" expand\$ to ramdisk
 then
 boot
 EOF
