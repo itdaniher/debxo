@@ -76,9 +76,11 @@ create_ofwboot()
 game-key-mask h# 80 and if
 	\\ boot from backup kernel
 	" ${dev}:\\vmlinuz.old" to boot-device
+	" ${dev}:\\initrd.img.old" to ramdisk
 else
 	\\ boot from regular kernel
 	" ${dev}:\\vmlinuz" to boot-device
+	" ${dev}:\\initrd.img" to ramdisk
 then
 boot
 EOF
