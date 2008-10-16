@@ -38,7 +38,7 @@ create_fstab()
 	if [ "${fstype}" = "jffs2" ]; then
 		r=mtd0
 	else
-		r="LABEL=OLPCRoot"
+		r="LABEL=${IMG_LABEL}"
 	fi
 
 	cat >${mntpt}/etc/fstab<<EOF
@@ -64,7 +64,7 @@ create_ofwboot()
 		rfs="rootfstype=jffs2"
 		dev=nand
 	else
-		r=/dev/sda1
+		r="LABEL=${IMG_LABEL}"
 		rfs=""
 		dev=disk
 	fi
