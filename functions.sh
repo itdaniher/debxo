@@ -41,8 +41,12 @@ create_fstab()
 		r="LABEL=${IMG_LABEL}"
 	fi
 
-	cat >${mntpt}/etc/fstab<<EOF
-${r} / ${fstype} defaults,noatime 1 1
+	echo "${r} / ${fstype} defaults,noatime 1 1" >${mntpt}/etc/fstab
+	if [ "${fstype}" = "jffs2" ]; then
+		echo "mtd:boot /boot jffs2 defaults,noatime 1 1" >>${mntpt}/etc/fstab
+	fi
+
+	cat >>${mntpt}/etc/fstab<<EOF
 devpts /dev/pts devpts gid=5,mode=620 0 0
 tmpfs /dev/shm tmpfs defaults,size=15% 0 0
 proc /proc proc defaults 0 0
