@@ -33,10 +33,10 @@ fi
 ROOT_DIR=$1
 IMG_NAME=$2
 
-if [ "${IMG_NAME}" == "${IMG_NAME/.img/.crc}" ]; then
-    CRC_NAME=${IMG_NAME}.crc
+if [ "${IMG_NAME}" == "${IMG_NAME/.img/.dat}" ]; then
+	DAT_NAME=${IMG_NAME}.dat
 else
-    CRC_NAME=${IMG_NAME/.img/.crc}
+	DAT_NAME=${IMG_NAME/.img/.dat}
 fi
 
 if [ ! -d "${ROOT_DIR}" ]; then
@@ -49,7 +49,64 @@ check_for_cmds mkfs.jffs2 sumtool || exit 1
 create_fstab ${ROOT_DIR} jffs2
 create_ofwboot ${ROOT_DIR} jffs2
 
-mkfs.jffs2 -n -e128KiB -r ${ROOT_DIR} -o ${IMG_NAME}.pre
-sumtool -n -p -e 128KiB -i ${IMG_NAME}.pre -o ${IMG_NAME}
-rm -f ${IMG_NAME}.pre
-./crcimg.pl < ${IMG_NAME} > ${CRC_NAME}
+create_jffs2()
+{
+	root_dir="$1"
+	out="$2"
+
+	# XXX:  do we want to switch to lzo?  (mkfs.jffs2 -X lzo)
+	mkfs.jffs2 -n -e128KiB -r ${root_dir} -o ${out}.pre
+	sumtool -n -p -e 128KiB -i ${out}.pre -o ${out}
+	rm -f ${out}.pre
+}
+
+do_sha256()
+{
+	f=$1
+	eblocks=$((`stat --printf "%s\n" $f` / (128*1024)))
+	for b in $(seq 0 $(($eblocks - 1))); do
+		sha=$(dd status=noxfer bs=128KiB skip=$b count=1 if=$f | sha256sum | cut -d- -f1)
+		echo "eblock: `printf '%x' $b` sha256 $sha" >> ${IMG_NAME}
+	done
+}
+
+partition_map()
+{
+	# 0x190 * 128KiB = 50MiB boot, and the rest for root
+	cat >${IMG_NAME}<<EOF
+data:  ${DAT_NAME}
+erase-all
+partitions:  boot 190  root -1
+set-partition: boot 
+mark-pending: 0
+EOF
+	do_sha256 "_boot.img"
+	cat >>${IMG_NAME}<<EOF
+cleanmarkers
+mark-complete: 0
+set-partition: root
+mark-pending: 0
+EOF
+	do_sha256 "_root.img"
+	cat >>${IMG_NAME}<<EOF
+cleanmarkers
+mark-complete: 0
+EOF
+}
+
+# create the boot partition
+ln -s . ${ROOT_DIR}/boot/boot
+create_jffs2 ${ROOT_DIR}/boot _boot.img
+rm -f ${ROOT_DIR}/boot/boot
+
+# create the root partition
+mv ${ROOT_DIR}/boot _boot
+mkdir ${ROOT_DIR}/boot
+create_jffs2 ${ROOT_DIR} _root.img
+rmdir ${ROOT_DIR}/boot
+mv _boot ${ROOT_DIR}/boot
+
+# concat partitions, finish up
+partition_map
+cat _boot.img _root.img > ${DAT_NAME}
+rm -f _boot.img _root.img

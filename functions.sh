@@ -36,7 +36,7 @@ create_fstab()
 	fstype="$2"
 
 	if [ "${fstype}" = "jffs2" ]; then
-		r=mtd0
+		r=mtd:root
 	else
 		r="LABEL=${IMG_LABEL}"
 	fi
@@ -60,7 +60,7 @@ create_ofwboot()
 	fstype="$2"
 
 	if [ "${fstype}" = "jffs2" ]; then
-		r=mtd0
+		r="mtd:root"
 		rfs="rootfstype=jffs2"
 	else
 		r="LABEL=${IMG_LABEL}"
