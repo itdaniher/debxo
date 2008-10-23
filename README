@@ -14,12 +14,12 @@ How to use xodist to generate a Debian KDE image:
 
 	sudo ./mkjffs2.sh kde.root kde.img
 
-3.  copy the kde.img and kde.crc files to a thumb drive,
+3.  copy the files to a thumb drive,
 
-	cp kde.img kde.crc /mnt/
+	cp kde.{dat,crc,img} /mnt/
 
 4.  boot an XO into OFW, then type:
 
-        copy-nand u:\kde.img
+        update-nand u:\kde.img
 
 Warning: this erases everything on the XO.
