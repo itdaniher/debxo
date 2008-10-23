@@ -53,9 +53,9 @@ create_jffs2()
 {
 	root_dir="$1"
 	out="$2"
+	comp="$3"
 
-	# XXX:  do we want to switch to lzo?  (mkfs.jffs2 -X lzo)
-	mkfs.jffs2 -n -e128KiB -r ${root_dir} -o ${out}.pre
+	mkfs.jffs2 -n -e128KiB -X${comp} -r ${root_dir} -o ${out}.pre
 	sumtool -n -p -e 128KiB -i ${out}.pre -o ${out}
 	rm -f ${out}.pre
 }
@@ -96,13 +96,14 @@ EOF
 
 # create the boot partition
 ln -s . ${ROOT_DIR}/boot/boot
-create_jffs2 ${ROOT_DIR}/boot _boot.img
+create_jffs2 ${ROOT_DIR}/boot _boot.img zlib
 rm -f ${ROOT_DIR}/boot/boot
 
 # create the root partition
 mv ${ROOT_DIR}/boot _boot
 mkdir ${ROOT_DIR}/boot
-create_jffs2 ${ROOT_DIR} _root.img
+create_jffs2 ${ROOT_DIR} _root.img zlib
+# lzo
 rmdir ${ROOT_DIR}/boot
 mv _boot ${ROOT_DIR}/boot
 
