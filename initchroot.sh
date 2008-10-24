@@ -55,6 +55,10 @@ do
 		;;
 	--package-list)
 		PLIST=$2
+		[ -f ${PLIST} ] || {
+			echo "Error: can't find file '${PLIST}'!" 1>&2
+			exit 2
+		}
 		shift
 		;;
 	--mirror)
