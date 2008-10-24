@@ -1,0 +1,33 @@
+general
+-------
+complete build script
+	shared package list (less, xchat, ..)
+	support lenny and sid
+new image type:
+	debian-edu standalone
+	debian-edu thinclient
+	sugar-sid
+publish images on people.d.o
+use debian-edu packaging, for the debxo package...
+
+general but later
+-----------------
+mic is on after boot
+optional: allow to create user on boot (for all images except sugar*)
+mount sd cards automatically
+emdebian images.. :)
+
+sugar
+-----
+say "yes" to use unauthenticated packages from jonas
+lots of activities missing
+browse broken: 
+	report as bug: echo /usr/libxulrunner-1.9/ > /etc/ld.so.conf.d/xulhack.conf
+	but still segfaults
+
+
+lxde
+----
+start nm-applet automatically
+fonts in lxterminal are broken (worked-around by installing xterm)
+
