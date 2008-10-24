@@ -3,3 +3,5 @@ libertas-firmware
 initramfs-tools
 wireless-tools
 sudo
+less
+alsa-utils

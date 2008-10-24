@@ -9,7 +9,6 @@ xfonts-base
 openssh-client
 openntpd
 diff
-less
 bzip2
 menu
 aspell-en
