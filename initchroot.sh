@@ -228,6 +228,16 @@ rm -rf ${ROOT_DIR}/home/*; 	# i have no idea what's adding this crap...
 (chroot ${ROOT_DIR} adduser ${DEFUSER} floppy)
 echo "${DEFUSER} ALL=(ALL) NOPASSWD: ALL" >> ${ROOT_DIR}/etc/sudoers
 
+# configure sugar
+if [ -d ${ROOT_DIR}/usr/share/sugar ]; then
+    # #?
+    ln -sf /usr/share/activities/ ${ROOT_DIR}/usr/share/sugar
+    cat >> ${ROOT_DIR}/home/${DEFUSER}/.Xsession <<- EOF
+matchbox-window-manager -use_titlebar no &
+sugar
+EOF
+fi
+
 # done, clean up
 mv ${ROOT_DIR}/sbin/start-stop-daemon.REAL ${ROOT_DIR}/sbin/start-stop-daemon
 (chroot ${ROOT_DIR} aptitude clean)
