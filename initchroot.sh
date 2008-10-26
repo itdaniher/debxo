@@ -232,6 +232,13 @@ rm -rf ${ROOT_DIR}/home/*; 	# i have no idea what's adding this crap...
 (chroot ${ROOT_DIR} adduser ${DEFUSER} floppy)
 echo "${DEFUSER} ALL=(ALL) NOPASSWD: ALL" >> ${ROOT_DIR}/etc/sudoers
 
+# add local network interface
+cat >>${ROOT_DIR}/etc/network/interfaces<<EOF
+
+auto lo
+iface lo inet loopback
+EOF
+
 # configure sugar
 if [ -d ${ROOT_DIR}/usr/share/sugar ]; then
     # #?
