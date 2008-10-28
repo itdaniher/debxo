@@ -16,11 +16,11 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-DIST=lenny
 DEFUSER=olpc
 PLIST=gnome.packages
-MIRROR=http://http.us.debian.org/debian/
-OTHERMIRROR=
+APT_SOURCES="deb http://http.us.debian.org/debian/ lenny main contrib non-free
+deb http://security.debian.org/ lenny/updates main contrib non-free"
+LOCAL_APT_MIRROR=
 
 . functions.sh
 
@@ -30,11 +30,10 @@ usage()
 	echo "Usage: $0 [<options>] <root directory>" 1>&2
 	echo "" 1>&2
 	echo "Options:" 1>&2
-	echo "  --distribution <name>     Which distribution to use" 1>&2
 	echo "  --user <user>             Username for default user" 1>&2
 	echo "  --package-list <list>     File containing package list" 1>&2
-	echo "  --mirror <url>            Main Mirror URL prefix" 1>&2
-	echo "  --othermirror <line>      An additional sources.list line" 1>&2
+	echo "  --apt-sources <srcs>      Contents of /etc/apt/sources.list" 1>&2
+	echo "  --local-apt-mirror <srcs> sources.list for local mirror" 1>&2
 	echo "" 1>&2
 	exit 1
 }
@@ -42,13 +41,6 @@ usage()
 while test $# != 0
 do
 	case $1 in
-	--distribution)
-		DIST=$2
-		shift
-		if [ -z "${OTHERMIRROR}" ]; then
-		    OTHERMIRROR="deb http://security.debian.org/ ${DIST}/updates main contrib non-free"
-		fi
-		;;
 	--user)
 		DEFUSER=$2
 		shift
@@ -61,12 +53,12 @@ do
 		}
 		shift
 		;;
-	--mirror)
-		MIRROR=$2
+	--apt-sources)
+		APT_SOURCES="$2"
 		shift
 		;;
-	--othermirror)
-		OTHERMIRROR=$2
+	--local-apt-mirror)
+		LOCAL_APT_MIRROR="$2"
 		shift
 		;;
 	*)
@@ -95,9 +87,13 @@ fi
 
 check_for_cmds debootstrap || exit 1
 
-if [ -z "${OTHERMIRROR}" ]; then
-    OTHERMIRROR="deb http://security.debian.org/ ${DIST}/updates main contrib non-free"
+if [ -z "${LOCAL_APT_MIRROR}" ]; then
+    LOCAL_APT_MIRROR="${APT_SOURCES}"
 fi
+
+# parse apt mirror
+MIRROR=$(printf "${LOCAL_APT_MIRROR}\n" | awk '/deb /{print $2}' | head -n1)
+DIST=$(printf "${LOCAL_APT_MIRROR}\n" | awk '/deb /{print $3}' | head -n1)
 
 # create chroot
 debootstrap --arch i386 ${DIST} ${ROOT_DIR} ${MIRROR}
@@ -127,10 +123,7 @@ Dir {
 	};
 };
 EOF
-cat >${ROOT_DIR}/etc/apt/sources.list<<EOF
-deb ${MIRROR} ${DIST} main contrib non-free
-${OTHERMIRROR}
-EOF
+printf "${LOCAL_APT_MIRROR}\n" >${ROOT_DIR}/etc/apt/sources.list
 (chroot ${ROOT_DIR} aptitude update)
 
 # set up base system and base packages
@@ -250,6 +243,10 @@ matchbox-window-manager -use_titlebar no &
 sugar
 EOF
 fi
+
+# override sources.list with shipping version
+printf "${APT_SOURCES}\n" >${ROOT_DIR}/etc/apt/sources.list
+(chroot ${ROOT_DIR} aptitude update)
 
 # done, clean up
 mv ${ROOT_DIR}/sbin/start-stop-daemon.REAL ${ROOT_DIR}/sbin/start-stop-daemon

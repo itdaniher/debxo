@@ -21,5 +21,7 @@ add the --mirror option, like this:
 
         sudo ./initchroot.sh \
             --package-list kde.packages \
-            --mirror http://localhost:9999/debian kde.root
+            --local-apt-mirror "deb http://localhost:9999/debian lenny main contrib non-free
+deb http://localhost:9999/security lenny/updates main contrib non-free" \
+            kde.root
 
