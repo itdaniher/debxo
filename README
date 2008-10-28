@@ -1,10 +1,15 @@
 xodist - Debian image builder for OLPC XO
 
+Why is this needed?  Because the OLPC XO has exceptional and flexible
+firmware support unlike an ordinary PC.  The usual Debian boot CDs do
+not work, yet.  xodist builds a Debian system image in the format
+required by the firmware.
+
 See *.packages for other image flavours, and change "kde" below to the
 flavour.  See README.approx before starting if you would like to cache
 the packages downloaded.
 
-How to use xodist to generate a Debian KDE image:
+How to use xodist to generate a Debian KDE image for an OLPC XO:
 
 1.  build the root filesystem,
 
@@ -16,10 +21,24 @@ How to use xodist to generate a Debian KDE image:
 
 3.  copy the files to a thumb drive,
 
-	cp kde.{dat,crc,img} /mnt/
+	sudo ./mkbootable.sh --output /mnt kde
 
-4.  boot an XO into OFW (note: OFW q2e14 or newer is required), then type:
+4.  ensure the XO is unlocked, by obtaining a Developer Key, and using
+the OpenFirmware command,
 
-        update-nand u:\kde.img
+	disable-security
 
-Warning: this erases everything on the XO.
+5.  shut down the XO,
+
+6.  insert the thumb drive,
+
+7.  power up, when prompted press Enter, and the image will be copied
+to the NAND flash, and then booted,
+
+Warning: this erases everything on the XO, including any Developer
+Key, but if you have followed step 4 above that should not matter so
+much.
+
+8.  remove the thumb drive before the next reboot or power up.
+
+Note: Firmware Q2E14 or newer is required.

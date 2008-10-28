@@ -16,8 +16,8 @@ security        http://security.debian.org/
 
 	% sudo /etc/init.d/approx restart
 
-4.  during the creation of the root filesystem described in README,
-add the --mirror option, like this:
+4.  follow README, but during the creation of the root filesystem, add
+the --mirror option, like this:
 
         sudo ./initchroot.sh \
             --package-list kde.packages \
