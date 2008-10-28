@@ -146,6 +146,8 @@ for i in $k; do
 	wget --continue -O cache/${pkg} ${i}
 	cp cache/${pkg} ${ROOT_DIR}/${pkg} 
 	(chroot ${ROOT_DIR} dpkg -i /${pkg})
+	pkgbase=$(echo $pkg | cut -d_ -f1)
+	echo $pkgbase hold | (chroot ${ROOT_DIR} dpkg --set-selections)
 	rm -f ${ROOT_DIR}/${pkg}
 done
 
