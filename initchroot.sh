@@ -110,6 +110,21 @@ echo "Warning: Fake start-stop-daemon called, doing nothing"
 EOF
 chmod 755 ${ROOT_DIR}/sbin/start-stop-daemon
 
+# set up hostname stuff
+echo "debxo" > ${ROOT_DIR}/etc/hostname
+cat >${ROOT_DIR}/etc/hosts<<EOF
+127.0.0.1 localhost.localdomain localhost
+127.0.0.1 debxo
+
+# The following lines are desirable for IPv6 capable hosts
+::1     ip6-localhost ip6-loopback
+fe00::0 ip6-localnet
+ff00::0 ip6-mcastprefix
+ff02::1 ip6-allnodes
+ff02::2 ip6-allrouters
+ff02::3 ip6-allhosts
+EOF
+
 # set up apt (working around #314334)
 export DEBIAN_FRONTEND=noninteractive
 export DEBCONF_PRIORITY=critical
@@ -151,20 +166,6 @@ fbcon
 olpc_dcon
 scx200_acb
 i8042
-EOF
-
-echo "debxo" > ${ROOT_DIR}/etc/hostname
-cat >${ROOT_DIR}/etc/hosts<<EOF
-127.0.0.1 localhost.localdomain localhost
-127.0.0.1 debxo
-
-# The following lines are desirable for IPv6 capable hosts
-::1     ip6-localhost ip6-loopback
-fe00::0 ip6-localnet
-ff00::0 ip6-mcastprefix
-ff02::1 ip6-allnodes
-ff02::2 ip6-allrouters
-ff02::3 ip6-allhosts
 EOF
 
 # install packages
