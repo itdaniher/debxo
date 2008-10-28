@@ -106,7 +106,7 @@ EOF
 ." Power off to abort, or" cr
 ." press Enter to erase everything here and install debxo ${IMAGE} ?"
 begin
-    key 13 =
+    key d =
 until
 EOF
 		;;
