@@ -1,4 +1,32 @@
 #!/bin/sh
+#
+# mkbootable.sh, make a bootable file set from a jffs2 image
+# Copyright © 2008  James Cameron <quozl@laptop.org>
+#
+# This file is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+#
+
+# Using an image produced by mkjffs2.sh,
+# produces a tree of files suitable for erasing and loading an XO,
+# typical usage is to mount USB storage and then populate the storage,
+# for example:
+#
+# mount /dev/sdz1 /mnt
+# ./mkbootable --output /mnt gnome
+# umount /mnt
+
 set -e
 
 IMAGE_DEFAULT=
@@ -118,10 +146,13 @@ cr
 ." Starting"
 
 \ erase the NAND flash and fill it with the image
-update-nand u:\\${IMAGE}.img
-
 \ boot from the NAND flash
-boot n:\boot\olpc.fth
+: update-and-boot
+  " update-nand u:\\${IMAGE}.img" evaluate
+  " boot n:\boot\olpc.fth" evaluate
+;
+
+update-and-boot
 EOF
 
 # TODO: avoid reflashing if already flashed
