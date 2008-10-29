@@ -65,7 +65,7 @@ do_sha256()
 	f=$1
 	eblocks=$((`stat --printf "%s\n" $f` / (128*1024)))
 	for b in $(seq 0 $(($eblocks - 1))); do
-		sha=$(dd status=noxfer bs=128KiB skip=$b count=1 if=$f | sha256sum | cut -d- -f1)
+		sha=$(dd status=noxfer bs=128KiB skip=$b count=1 if=$f 2>/dev/null | sha256sum | cut -d- -f1)
 		echo "eblock: `printf '%x' $b` sha256 $sha" >> ${IMG_NAME}
 	done
 }
