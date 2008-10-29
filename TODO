@@ -17,6 +17,18 @@ optional: allow to create user on boot (for all images except sugar*)
 mount sd cards automatically
 emdebian images.. :)
 
+hardware enablement
+-------------------
+keymap for the extra keyboard keys and game buttons
+	key to right of esc, second from start of first row
+	key to right of f12, second from end of first row
+	fn, first key on last row
+	multiply divide, last key on second last row
+brightness control keys (conflicts with function key usage)
+volume control keys (conflicts with function key usage)
+turn off backlight on suspend or hibernate
+hibernate on lid close
+
 sugar
 -----
 say "yes" to use unauthenticated packages from jonas
@@ -30,4 +42,4 @@ lxde
 ----
 start nm-applet automatically
 fonts in lxterminal are broken (worked-around by installing xterm)
-
+	can also be fixed using edit-preferences, so default font is problem
