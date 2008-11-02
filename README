@@ -41,4 +41,6 @@ much.
 
 8.  remove the thumb drive before the next reboot or power up.
 
-Note: Firmware Q2E14 or newer is required.
+Note: Firmware Q2E20 or newer is required. The jffs2 images are for
+installation on NAND (the onboard flash), the ext3 images are only for
+usbsticks and sd-cards.
