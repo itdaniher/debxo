@@ -169,7 +169,7 @@ i8042
 EOF
 
 # install packages
-(chroot ${ROOT_DIR} aptitude install -y `cat ${PLIST}`)
+(chroot ${ROOT_DIR} aptitude install -y `grep --invert-match '^#' ${PLIST}`)
 
 # configure X
 if [ -d ${ROOT_DIR}/etc/X11 ]; then
