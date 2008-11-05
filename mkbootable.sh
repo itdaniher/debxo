@@ -101,7 +101,7 @@ if ! test -d ${OUTPUT}; then
 	mkdir ${OUTPUT}
 fi
 
-cp ${IMAGE}.{dat,crc,img} ${OUTPUT}
+cp ${IMAGE}.{dat,img} ${OUTPUT}
 
 mkdir -p ${OUTPUT}/boot
 
@@ -114,7 +114,6 @@ cr
 cr
 ." `md5sum ${IMAGE}.img`" cr
 ." `md5sum ${IMAGE}.dat`" cr
-." `md5sum ${IMAGE}.crc`" cr
 cr
 EOF
 
