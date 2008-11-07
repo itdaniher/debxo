@@ -166,6 +166,7 @@ fbcon
 olpc_dcon
 scx200_acb
 i8042
+olpc_battery
 EOF
 
 # install packages
@@ -243,6 +244,17 @@ if [ -d ${ROOT_DIR}/usr/share/sugar ]; then
 matchbox-window-manager -use_titlebar no &
 sugar
 EOF
+fi
+
+# run any local postinstall scripts for the build
+PLIST_DIR=${PLIST/.packages/}
+if [ -d ${PLIST_DIR} ]; then
+    if [ -x ${PLIST_DIR}/postinst.sh ]; then
+	${PLIST_DIR}/postinst.sh ${ROOT_DIR}
+    fi
+    if [ -x ${PLIST_DIR}/postinst-local.sh ]; then
+	${PLIST_DIR}/postinst-local.sh ${ROOT_DIR}
+    fi
 fi
 
 # override sources.list with shipping version
