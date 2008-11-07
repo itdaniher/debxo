@@ -35,3 +35,5 @@ xchat
 irssi
 gnash
 mozilla-plugin-gnash
+# requested by erikg on #olpc-devel on 2008-11-07
+xterm
