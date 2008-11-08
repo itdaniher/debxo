@@ -21,6 +21,10 @@
 		</dir>
 	</dir>
 	<dir name="apps">
+		<dir name="gksu">
+			<entry name="sudo-mode" type="bool" value="true">
+			</entry>
+		</dir>
 		<dir name="metacity">
 			<dir name="general">
 				<entry name="titlebar_font" type="string">
