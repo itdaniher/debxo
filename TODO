@@ -1,3 +1,35 @@
+roadmap
+-------
+
+0.4
+  * game keys - make them work (for ALL desktops)
+  * shrink ext3 images - they don't apparently fit on some 2GB sticks.  Make
+    them smaller.
+  * xorg geode driver - update to new version.  Jordan has new code upstream
+    which supports RANDR, doesn't require an xorg.conf, and make the fonts
+    look much much better.  However, it currently doesn't default to the
+    right resolution, and XV is broken.
+
+0.5
+  * hal - HAL gets info from ACPI, APM, or OFW.  Our OFW is
+    not standard, so HAL doesn't get the proper information (thus gnome's
+    power manager doesn't support suspend-on-lid-close, for example).  This
+    needs to be done; a combination of getting promfs kernel stuff upstream,
+    standardizing on location, and getting HAL updated to use new paths.
+  * power management - pm-utils does stupid stuff like switching away from 
+    X before suspend.  It shouldn't do this.  It should, however, disable
+    wlan and tell the dcon to sleep during suspend.
+      echo 0 > /sys/power/wlan-enabled;
+      echo 1 >  /sys/devices/platform/dcon/sleep
+  * unionfs for ext3 images - Mitch has proposed a scheme similar to
+    puppy linux and various livecd images that would allow us to copy images
+    onto an SD or USB stick without destroying the partition table or the
+    filesystem.
+
+0.6+
+  * what's up with ekiga?  gst works for capturing video, why doesn't ekiga?
+
+
 general
 -------
 complete build script
@@ -12,7 +44,7 @@ use debian-edu packaging, for the debxo package...
 
 general but later
 -----------------
-mic is on after boot
+mic is on after boot  - fixed with new upstream kernel
 optional: allow to create user on boot (for all images except sugar*)
 mount sd cards automatically
 emdebian images.. :)
