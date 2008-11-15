@@ -17,6 +17,7 @@
           <append key="input.keymap.data" type="strlist">0xe067:kp4</append> <!-- Game Key - [] -->
           <append key="input.keymap.data" type="strlist">0xe068:kp6</append> <!-- Game Key - V -->
 
+          <append key="input.keymap.data" type="strlist">0x73:prog1</append> <!-- mult/div -->
           <append key="input.keymap.data" type="strlist">0x43:brightnessdown</append> <!-- Backlight Down (F9) -->
           <append key="input.keymap.data" type="strlist">0x44:brightnessup</append> <!-- Backlight Up (F10) -->
           <append key="input.keymap.data" type="strlist">0x57:volumedown</append> <!-- Volume Down (F11) -->
@@ -28,6 +29,9 @@
           <append key="input.keymap.data" type="strlist">0xe044:f10</append> <!-- Fn+Backlight Up (F10) -->
           <append key="input.keymap.data" type="strlist">0xe057:f11</append> <!-- Fn+Volume Down (F11) -->
           <append key="input.keymap.data" type="strlist">0xe058:f12</append> <!-- Fn+Volume Up (F12) -->
+
+          <append key="input.keymap.data" type="strlist">0xe079:search</append> <!-- Search -->
+          <append key="input.keymap.data" type="strlist">0xe06e:chat</append> <!-- Chat -->
 
           <append key="info.capabilities" type="strlist">input.keymap</append>
 
