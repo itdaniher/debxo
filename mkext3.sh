@@ -16,7 +16,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-ROOT_SIZE="2048"
+ROOT_SIZE="1998"
 IMG_LABEL="DebXO"
 IMG_NAME=""
 ROOT_DIR=""
