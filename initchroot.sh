@@ -197,6 +197,11 @@ EndSection
 EOF
 fi
 
+# key bindings/mappings
+if [ -d ${ROOT_DIR}/usr/share/hal/fdi/information/10freedesktop/ ]; then
+    cp 30-keymap-olpc.fdi ${ROOT_DIR}/usr/share/hal/fdi/information/10freedesktop/
+fi
+
 # configure kdm, kde
 if [ -d ${ROOT_DIR}/etc/kde3/kdm ]; then
     sed --in-place "s/AllowNullPasswd=false/AllowNullPasswd=true/;s/#AutoLoginEnable=true/AutoLoginEnable=true/;s/#AutoLoginUser=fred/AutoLoginUser=${DEFUSER}/" ${ROOT_DIR}/etc/kde3/kdm/kdmrc
