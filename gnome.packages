@@ -23,6 +23,7 @@ gnome-power-manager
 gnome-media
 gnome-mount
 gnome-system-tools
+gnome-volume-manager
 gnome-themes
 gnome-utils
 gconf-editor
