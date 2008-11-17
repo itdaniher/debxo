@@ -167,6 +167,7 @@ olpc_dcon
 scx200_acb
 i8042
 olpc_battery
+msr
 EOF
 
 # install packages
