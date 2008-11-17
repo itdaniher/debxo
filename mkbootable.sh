@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # mkbootable.sh, make a bootable file set from a jffs2 image
 # Copyright © 2008  James Cameron <quozl@laptop.org>

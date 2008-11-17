@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 #
 # Copyright © 2008  Andres Salomon <dilinger@queued.net>
 #
