@@ -21,7 +21,7 @@ IMG_LABEL="DebXO"
 IMG_NAME=""
 ROOT_DIR=""
 
-. functions.sh
+. ./functions.sh
 
 # @img - fs image to attach loop device to
 # @offset - if the image is partitioned, the offset to attach at

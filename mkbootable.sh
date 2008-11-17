@@ -33,7 +33,7 @@ IMAGE_DEFAULT=
 INTERACTIVE=yes
 OUTPUT=${IMAGE_DEFAULT}.bootable
 
-. functions.sh
+. ./functions.sh
 
 images()
 {

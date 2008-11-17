@@ -22,7 +22,7 @@ APT_SOURCES="deb http://http.us.debian.org/debian/ lenny main contrib non-free
 deb http://security.debian.org/ lenny/updates main contrib non-free"
 LOCAL_APT_MIRROR=
 
-. functions.sh
+. ./functions.sh
 
 usage()
 {
