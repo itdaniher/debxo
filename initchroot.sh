@@ -85,6 +85,8 @@ if [ -d "${ROOT_DIR}" ]; then
 	usage
 fi
 
+start_logging $ROOT_DIR
+
 check_for_cmds debootstrap || exit 1
 
 if [ -z "${LOCAL_APT_MIRROR}" ]; then

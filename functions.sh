@@ -114,3 +114,13 @@ chroot_internal_umounts()
     umount ${root_dir}/dev/pts
     umount ${root_dir}/var/cache/apt/cache
 }
+
+start_logging()
+{
+    logpipe="$1".pipe
+    trap "rm -f $logpipe" 0
+    mknod $logpipe p
+    tee "$1".log <$logpipe &
+    trap "kill $!; rm -f $logpipe" 0
+    exec >$logpipe 2>&1
+}
