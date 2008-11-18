@@ -147,7 +147,8 @@ echo "en_US.UTF-8 UTF-8" >${ROOT_DIR}/etc/locale.gen
 
 k="http://lunge.mit.edu/~dilinger/debxo-0.2/initramfs-tools_0.92l.2_all.deb 
  http://lunge.mit.edu/~dilinger/debxo-0.2/ofw-config_0.1_all.deb 
- http://lunge.mit.edu/~dilinger/debxo-0.3/linux-2.6.25.15_2.6.25.15-147_i386.deb"
+ http://lunge.mit.edu/~dilinger/debxo-0.3/linux-2.6.25.15_2.6.25.15-147_i386.deb 
+ http://lunge.mit.edu/~dilinger/debxo-0.4/xserver-xorg-video-geode_2.11.0-0.1_i386.deb"
 mkdir -p cache
 for i in $k; do
 	pkg=$(basename ${i})
@@ -158,6 +159,8 @@ for i in $k; do
 	echo $pkgbase hold | (chroot ${ROOT_DIR} dpkg --set-selections)
 	rm -f ${ROOT_DIR}/${pkg}
 done
+# take the geode driver off hold
+echo xserver-xorg-video-geode install | (chroot ${ROOT_DIR} dpkg --set-selections)
 
 # ensure certain modules get loaded during boot
 cat >>${ROOT_DIR}/etc/modules<<EOF
@@ -173,30 +176,8 @@ EOF
 # install packages
 (chroot ${ROOT_DIR} aptitude install -y `grep --invert-match '^#' ${PLIST}`)
 
-# configure X
-if [ -d ${ROOT_DIR}/etc/X11 ]; then
-    cat >${ROOT_DIR}/etc/X11/xorg.conf<<EOF
-# xorg.conf (X.Org X Window System server configuration file)
-
-Section "Monitor"
-	Identifier "Configured Monitor"
-	HorizSync 30-67
-	VertRefresh 48-52
-	DisplaySize 152 114
-	Mode "1200x900"
-		DotClock 57.275
-		HTimings 1200 1208 1216 1240
-		VTimings 900 905 908 912
-		Flags "-HSync" "-VSync"
-	EndMode
-EndSection
-
-Section "Screen"
-	Identifier "Default Screen"
-	Monitor "Configured Monitor"
-EndSection
-EOF
-fi
+# no longer a need for xorg.conf
+rm -f ${ROOT_DIR}/etc/X11/xorg.conf
 
 # key bindings/mappings
 if [ -d ${ROOT_DIR}/usr/share/hal/fdi/information/10freedesktop/ ]; then
