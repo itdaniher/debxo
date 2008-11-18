@@ -6,3 +6,4 @@ sudo
 less
 alsa-utils
 ttf-liberation
+xserver-xorg-video-geode
