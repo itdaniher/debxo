@@ -19,6 +19,7 @@ roadmap
     puppy linux and various livecd images that would allow us to copy images
     onto an SD or USB stick without destroying the partition table or the
     filesystem.
+    fedora's livecd stuff - http://git.fedoraproject.org/git/?p=hosted/livecd;a=tree
 
 0.6+
   * what's up with ekiga?  gst works for capturing video, why doesn't ekiga?
