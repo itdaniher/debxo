@@ -1,15 +1,6 @@
 roadmap
 -------
 
-0.4
-  * game keys - make them work (for ALL desktops)
-  * shrink ext3 images - they don't apparently fit on some 2GB sticks.  Make
-    them smaller.
-  * xorg geode driver - update to new version.  Jordan has new code upstream
-    which supports RANDR, doesn't require an xorg.conf, and make the fonts
-    look much much better.  However, it currently doesn't default to the
-    right resolution, and XV is broken.
-
 0.5
   * hal - HAL gets info from ACPI, APM, or OFW.  Our OFW is
     not standard, so HAL doesn't get the proper information (thus gnome's
