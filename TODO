@@ -2,6 +2,9 @@ roadmap
 -------
 
 0.5
+  * automatically start X for desktops that don't have a display manager; that
+    is, !gnome and !kde.  http://bbs.archlinux.org/viewtopic.php?id=49160
+    is a good starting point, if we want to do it via inittab.
   * hal - HAL gets info from ACPI, APM, or OFW.  Our OFW is
     not standard, so HAL doesn't get the proper information (thus gnome's
     power manager doesn't support suspend-on-lid-close, for example).  This
