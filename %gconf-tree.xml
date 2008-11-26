@@ -7,12 +7,51 @@
 					<stringvalue>/usr/share/pixmaps/backgrounds/gnome/nature/FreshFlower.jpg</stringvalue>
 				</entry>
 			</dir>
+			<dir name="interface">
+				<entry name="monospace_font_name" type="string">
+					<stringvalue>Monospace 8</stringvalue>
+				</entry>
+				<entry name="document_font_name" type="string">
+					<stringvalue>Sans 8</stringvalue>
+				</entry>
+				<entry name="font_name" type="string">
+					<stringvalue>Sans 8</stringvalue>
+				</entry>
+			</dir>
 		</dir>
 	</dir>
 	<dir name="apps">
 		<dir name="gksu">
 			<entry name="sudo-mode" type="bool" value="true">
 			</entry>
+		</dir>
+		<dir name="metacity">
+			<dir name="general">
+				<entry name="titlebar_font" type="string">
+					<stringvalue>Sans Bold 8</stringvalue>
+				</entry>
+			</dir>
+		</dir>
+		<dir name="nautilus">
+			<dir name="preferences">
+				<entry name="desktop_font" type="string">
+					<stringvalue>Sans 8</stringvalue>
+				</entry>
+			</dir>
+		</dir>
+		<dir name="epiphany">
+			<dir name="web">
+				<entry name="variable_font_size_x-western" type="int" value="8">
+				</entry>
+				<entry name="fixed_font_size_x-western" type="int" value="8">
+				</entry>
+				<entry name="minimum_font_size_x-western" type="int" value="8">
+				</entry>
+				<entry name="minimum_font_size" type="int" value="8">
+				</entry>
+				<entry name="use_own_fonts" type="bool" value="true">
+				</entry>
+			</dir>
 		</dir>
 	</dir>
 </gconf>
