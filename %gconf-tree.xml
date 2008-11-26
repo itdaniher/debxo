@@ -18,6 +18,10 @@
 					<stringvalue>Sans 8</stringvalue>
 				</entry>
 			</dir>
+			<dir name="font_rendering">
+				<entry name="dpi" type="float" value="150">
+				</entry>
+			</dir>
 		</dir>
 	</dir>
 	<dir name="apps">
