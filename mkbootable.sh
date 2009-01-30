@@ -109,6 +109,7 @@ mkdir -p ${OUTPUT}/boot
 cat <<EOF >${OUTPUT}/boot/olpc.fth
 \ OLPC boot script
 
+visible
 cr
 ." This is a debxo bootable install script." cr
 cr
