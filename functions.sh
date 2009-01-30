@@ -95,6 +95,7 @@ else
 	" \${DN}\\vmlinuz" expand\$ to boot-device
 	" \${DN}\\initrd.img" expand\$ to ramdisk
 then
+dcon-unfreeze
 boot
 EOF
 }
