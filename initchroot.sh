@@ -228,7 +228,6 @@ EOF
 # configure sugar
 if [ -d ${ROOT_DIR}/usr/share/sugar ]; then
     # #?
-    ln -sf /usr/share/activities/ ${ROOT_DIR}/usr/share/sugar
     cat >> ${ROOT_DIR}/home/${DEFUSER}/.Xsession <<- EOF
 matchbox-window-manager -use_titlebar no &
 sugar
