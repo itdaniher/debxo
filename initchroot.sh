@@ -150,7 +150,8 @@ echo "en_US.UTF-8 UTF-8" >${ROOT_DIR}/etc/locale.gen
 k="http://lunge.mit.edu/~dilinger/debxo-0.2/initramfs-tools_0.92l.2_all.deb 
  http://lunge.mit.edu/~dilinger/debxo-0.2/ofw-config_0.1_all.deb 
  http://lunge.mit.edu/~dilinger/debxo-0.4/linux-2.6.25.15_2.6.25.15-165_i386.deb 
- http://lunge.mit.edu/~dilinger/debxo-0.5/xserver-xorg-video-geode_2.11.0-0.3_i386.deb"
+ http://lunge.mit.edu/~dilinger/debxo-0.5/xserver-xorg-video-geode_2.11.0-0.3_i386.deb 
+ http://lunge.mit.edu/~dilinger/debxo-0.5/autox_0.1_all.deb"
 mkdir -p cache
 for i in $k; do
 	pkg=$(basename ${i})
@@ -163,6 +164,8 @@ for i in $k; do
 done
 # take the geode driver off hold
 echo xserver-xorg-video-geode install | (chroot ${ROOT_DIR} dpkg --set-selections)
+# take autox off hold
+echo autox install | (chroot ${ROOT_DIR} dpkg --set-selections)
 
 # ensure certain modules get loaded during boot
 cat >>${ROOT_DIR}/etc/modules<<EOF
@@ -186,15 +189,12 @@ if [ -d ${ROOT_DIR}/usr/share/hal/fdi/information/10freedesktop/ ]; then
     cp 30-keymap-olpc.fdi ${ROOT_DIR}/usr/share/hal/fdi/information/10freedesktop/
 fi
 
-# configure kdm, kde
-if [ -d ${ROOT_DIR}/etc/kde3/kdm ]; then
-    sed --in-place "s/AllowNullPasswd=false/AllowNullPasswd=true/;s/#AutoLoginEnable=true/AutoLoginEnable=true/;s/#AutoLoginUser=fred/AutoLoginUser=${DEFUSER}/" ${ROOT_DIR}/etc/kde3/kdm/kdmrc
+# configure autox
+if [ -f ${ROOT_DIR}/etc/default/autox ]; then
+    sed --in-place "s/USER=$/USER=${DEFUSER}/" ${ROOT_DIR}/etc/default/autox
 fi
 
-# configure gdm, gnome
-if [ -d ${ROOT_DIR}/etc/gdm ]; then
-    sed -i "s_\[daemon\]_\[daemon\]\n\nGreeter=/usr/lib/gdm/gdmlogin\n\nAutomaticLoginEnable=true\n\nAutomaticLogin=${DEFUSER}_" ${ROOT_DIR}/etc/gdm/gdm.conf
-fi
+# configure gnome
 if [ -d ${ROOT_DIR}/etc/gconf/2 ]; then
     cat >${ROOT_DIR}/etc/gconf/2/local-defaults.path<<EOF
 # DebXO defaults (customized for the XO-1's display
