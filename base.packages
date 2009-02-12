@@ -8,3 +8,5 @@ alsa-utils
 ttf-liberation
 xserver-xorg-video-geode
 xinit
+psmisc
+console-tools
