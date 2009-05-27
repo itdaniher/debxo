@@ -13,7 +13,7 @@ How to use xodist to generate a Debian KDE image for an OLPC XO:
 
 1.  build the root filesystem,
 
-	sudo ./initchroot.sh --package-list kde.packages kde.root
+	sudo ./mkchroot.sh --package-list kde.packages kde.root
 
 2.  make the JFFS2 filesystem,
 

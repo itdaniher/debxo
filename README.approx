@@ -1,4 +1,4 @@
-Problem: every time you use initchroot.sh the hundreds of megabytes of
+Problem: every time you use mkchroot.sh the hundreds of megabytes of
 packages are downloaded again.
 
 Solution: set up the approx package to cache these packages.
@@ -19,7 +19,7 @@ security        http://security.debian.org/
 4.  follow README, but during the creation of the root filesystem, add
 the --mirror option, like this:
 
-        sudo ./initchroot.sh \
+        sudo ./mkchroot.sh \
             --package-list kde.packages \
             --local-apt-mirror "deb http://localhost:9999/debian lenny main contrib non-free
 deb http://localhost:9999/security lenny/updates main contrib non-free" \
