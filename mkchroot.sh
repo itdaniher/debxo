@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright © 2008  Andres Salomon <dilinger@queued.net>
+# Copyright © 2008-2009  Andres Salomon <dilinger@collabora.co.uk>
 #
 # This file is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -101,7 +101,9 @@ DIST=$(printf "${LOCAL_APT_MIRROR}\n" | awk '/deb /{print $3}' | head -n1)
 debootstrap --arch i386 ${DIST} ${ROOT_DIR} ${MIRROR}
 mkdir ${ROOT_DIR}/ofw
 mkdir ${ROOT_DIR}/var/cache/apt/cache
-chroot_internal_mounts ${ROOT_DIR}
+mount -t proc proc ${ROOT_DIR}/proc
+mount -t devpts devpts ${ROOT_DIR}/dev/pts
+mount -t tmpfs tmpfs ${ROOT_DIR}/var/cache/apt/cache
 
 # allow daemons to be installed without breaking
 mv ${ROOT_DIR}/sbin/start-stop-daemon ${ROOT_DIR}/sbin/start-stop-daemon.REAL
@@ -252,4 +254,6 @@ printf "${APT_SOURCES}\n" >${ROOT_DIR}/etc/apt/sources.list
 # done, clean up
 mv ${ROOT_DIR}/sbin/start-stop-daemon.REAL ${ROOT_DIR}/sbin/start-stop-daemon
 (chroot ${ROOT_DIR} aptitude clean)
-chroot_internal_umounts ${ROOT_DIR}
+umount ${ROOT_DIR}/proc
+umount ${ROOT_DIR}/dev/pts
+umount ${ROOT_DIR}/var/cache/apt/cache

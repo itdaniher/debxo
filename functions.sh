@@ -100,14 +100,6 @@ boot
 EOF
 }
 
-chroot_internal_mounts()
-{
-    root_dir="$1"
-    mount -t proc proc ${root_dir}/proc
-    mount -t devpts devpts ${root_dir}/dev/pts
-    mount -t tmpfs tmpfs ${root_dir}/var/cache/apt/cache
-}
-
 chroot_internal_umounts()
 {
     root_dir="$1"
