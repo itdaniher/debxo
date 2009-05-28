@@ -33,14 +33,12 @@ xfonts-100dpi
 xfonts-scalable
 xfonts-base
 x11-xserver-utils
-xinit
-xauth
 
 # the gnome and desktop stuff
 menu
 aspell-en
 ttf-liberation
-#gdm
+gdm
 gnome-core
 gnome-backgrounds
 gnome-power-manager
