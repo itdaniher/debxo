@@ -16,13 +16,14 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-DEFUSER=olpc
-PLIST=gnome.packages
-APT_SOURCES="deb http://http.us.debian.org/debian/ lenny main contrib non-free
-deb http://security.debian.org/ lenny/updates main contrib non-free"
-LOCAL_APT_MIRROR=
-
 . ./functions.sh
+
+# load & set default values
+CONFIG_TYPE=generic
+. ./configs/${CONFIG_TYPE}/variables
+. ./configs/${CONFIG_TYPE}/hooks
+BASE_PLIST="./configs/${CONFIG_TYPE}/packages"
+LOCAL_APT_MIRROR=
 
 usage()
 {
@@ -30,9 +31,7 @@ usage()
 	echo "Usage: $0 [<options>] <root directory>" 1>&2
 	echo "" 1>&2
 	echo "Options:" 1>&2
-	echo "  --user <user>             Username for default user" 1>&2
-	echo "  --package-list <list>     File containing package list" 1>&2
-	echo "  --apt-sources <srcs>      Contents of /etc/apt/sources.list" 1>&2
+	echo "  --config-type <config>    directory name in configs/ to use" 1>&2
 	echo "  --local-apt-mirror <srcs> sources.list for local mirror" 1>&2
 	echo "" 1>&2
 	exit 1
@@ -41,20 +40,12 @@ usage()
 while test $# != 0
 do
 	case $1 in
-	--user)
-		DEFUSER=$2
-		shift
-		;;
-	--package-list)
-		PLIST=$2
-		[ -f ${PLIST} ] || {
-			echo "Error: can't find file '${PLIST}'!" 1>&2
+	--config-type)
+		CONFIG_TYPE=$2
+		[ -d ./configs/${CONFIG_TYPE} ] || {
+			echo "Error: can't find directory './configs/${CONFIG_TYPE}/'!" 1>&2
 			exit 2
 		}
-		shift
-		;;
-	--apt-sources)
-		APT_SOURCES="$2"
 		shift
 		;;
 	--local-apt-mirror)
@@ -85,9 +76,18 @@ if [ -d "${ROOT_DIR}" ]; then
 	usage
 fi
 
+if [ "$UID" != "0" ]; then
+	echo "" 1>&2
+	echo "*** $0 must be run with root privs!" 1>&2
+	exit 1
+fi
+
 start_logging $ROOT_DIR
 
-check_for_cmds debootstrap || exit 1
+# load config-specific values
+. ./configs/${CONFIG_TYPE}/variables
+. ./configs/${CONFIG_TYPE}/hooks
+PLIST="./configs/${CONFIG_TYPE}/packages"
 
 if [ -z "${LOCAL_APT_MIRROR}" ]; then
     LOCAL_APT_MIRROR="${APT_SOURCES}"
@@ -98,12 +98,9 @@ MIRROR=$(printf "${LOCAL_APT_MIRROR}\n" | awk '/deb /{print $2}' | head -n1)
 DIST=$(printf "${LOCAL_APT_MIRROR}\n" | awk '/deb /{print $3}' | head -n1)
 
 # create chroot
-debootstrap --arch i386 ${DIST} ${ROOT_DIR} ${MIRROR}
-mkdir ${ROOT_DIR}/ofw
-mkdir ${ROOT_DIR}/var/cache/apt/cache
+debootstrap --arch ${IMG_ARCH} ${DIST} ${ROOT_DIR} ${MIRROR}
 mount -t proc proc ${ROOT_DIR}/proc
 mount -t devpts devpts ${ROOT_DIR}/dev/pts
-mount -t tmpfs tmpfs ${ROOT_DIR}/var/cache/apt/cache
 
 # allow daemons to be installed without breaking
 mv ${ROOT_DIR}/sbin/start-stop-daemon ${ROOT_DIR}/sbin/start-stop-daemon.REAL
@@ -115,10 +112,10 @@ EOF
 chmod 755 ${ROOT_DIR}/sbin/start-stop-daemon
 
 # set up hostname stuff
-echo "debxo" > ${ROOT_DIR}/etc/hostname
+echo "${IMG_HOSTNAME}" > ${ROOT_DIR}/etc/hostname
 cat >${ROOT_DIR}/etc/hosts<<EOF
 127.0.0.1 localhost.localdomain localhost
-127.0.0.1 debxo
+127.0.0.1 ${IMG_HOSTNAME}
 
 # The following lines are desirable for IPv6 capable hosts
 ::1     ip6-localhost ip6-loopback
@@ -129,82 +126,33 @@ ff02::2 ip6-allrouters
 ff02::3 ip6-allhosts
 EOF
 
-# set up apt (working around #314334)
+# add local network interface
+cat >>${ROOT_DIR}/etc/network/interfaces<<EOF
+
+auto lo
+iface lo inet loopback
+EOF
+
+# set the default locale
+echo "${IMG_LOCALE}" >${ROOT_DIR}/etc/locale.gen
+
+# run any customizations necessary pre-package install
+customize_chroot_hook "$ROOT_DIR"
+
+# initialize apt
 export DEBIAN_FRONTEND=noninteractive
 export DEBCONF_PRIORITY=critical
-cat >${ROOT_DIR}/etc/apt/apt.conf<<EOF
-Acquire::Pdiffs "false";
-APT::Install-Recommends "false";
-Dir {
-	Cache "var/cache/apt/" {
-		srcpkgcache "cache/srcpkgcache.bin";
-		pkgcache "cache/pkgcache.bin";
-	};
-};
-EOF
 printf "${LOCAL_APT_MIRROR}\n" >${ROOT_DIR}/etc/apt/sources.list
 (chroot ${ROOT_DIR} aptitude update)
 
-# set up base system and base packages
-echo "en_US.UTF-8 UTF-8" >${ROOT_DIR}/etc/locale.gen
-(chroot ${ROOT_DIR} aptitude install -y `cat base.packages`)
+# generic packages are always installed
+(chroot ${ROOT_DIR} aptitude install -y `grep --invert-match '^#' ${BASE_PLIST}`)
 
-k="http://lunge.mit.edu/~dilinger/debxo-0.2/initramfs-tools_0.92l.2_all.deb 
- http://lunge.mit.edu/~dilinger/debxo-0.2/ofw-config_0.1_all.deb 
- http://lunge.mit.edu/~dilinger/debxo-0.4/linux-2.6.25.15_2.6.25.15-165_i386.deb 
- http://lunge.mit.edu/~dilinger/debxo-0.5/xserver-xorg-video-geode_2.11.0-0.3_i386.deb 
- http://lunge.mit.edu/~dilinger/debxo-0.5/autox_0.1_all.deb"
-mkdir -p cache
-for i in $k; do
-	pkg=$(basename ${i})
-	wget --continue -O cache/${pkg} ${i}
-	cp cache/${pkg} ${ROOT_DIR}/${pkg} 
-	(chroot ${ROOT_DIR} dpkg -i /${pkg})
-	pkgbase=$(echo $pkg | cut -d_ -f1)
-	echo $pkgbase hold | (chroot ${ROOT_DIR} dpkg --set-selections)
-	rm -f ${ROOT_DIR}/${pkg}
-done
-# take the geode driver off hold
-echo xserver-xorg-video-geode install | (chroot ${ROOT_DIR} dpkg --set-selections)
-# take autox off hold
-echo autox install | (chroot ${ROOT_DIR} dpkg --set-selections)
-
-# ensure certain modules get loaded during boot
-cat >>${ROOT_DIR}/etc/modules<<EOF
-lxfb
-fbcon
-olpc_dcon
-scx200_acb
-i8042
-olpc_battery
-msr
-EOF
-
-# install packages
+# install the rest of the packages
 (chroot ${ROOT_DIR} aptitude install -y `grep --invert-match '^#' ${PLIST}`)
 
-# no longer a need for xorg.conf
-rm -f ${ROOT_DIR}/etc/X11/xorg.conf
-
-# key bindings/mappings
-if [ -d ${ROOT_DIR}/usr/share/hal/fdi/information/10freedesktop/ ]; then
-    cp 30-keymap-olpc.fdi ${ROOT_DIR}/usr/share/hal/fdi/information/10freedesktop/
-fi
-
-# configure autox
-if [ -f ${ROOT_DIR}/etc/default/autox ]; then
-    sed --in-place "s/USER=$/USER=${DEFUSER}/" ${ROOT_DIR}/etc/default/autox
-fi
-
-# configure gnome
-if [ -d ${ROOT_DIR}/etc/gconf/2 ]; then
-    cat >${ROOT_DIR}/etc/gconf/2/local-defaults.path<<EOF
-# DebXO defaults (customized for the XO-1's display
-xml:readonly:/etc/gconf/debxo.xml.defaults
-EOF
-    mkdir -p ${ROOT_DIR}/etc/gconf/debxo.xml.defaults
-    cp %gconf-tree.xml ${ROOT_DIR}/etc/gconf/debxo.xml.defaults/
-fi
+# post-install customization hook
+package_configure_hook "${ROOT_DIR}"
 
 # add default user
 (chroot ${ROOT_DIR} passwd -l root)
@@ -220,33 +168,6 @@ rm -rf ${ROOT_DIR}/home/*; 	# i have no idea what's adding this crap...
 (chroot ${ROOT_DIR} adduser ${DEFUSER} floppy)
 echo "${DEFUSER} ALL=(ALL) NOPASSWD: ALL" >> ${ROOT_DIR}/etc/sudoers
 
-# add local network interface
-cat >>${ROOT_DIR}/etc/network/interfaces<<EOF
-
-auto lo
-iface lo inet loopback
-EOF
-
-# configure sugar
-if [ -d ${ROOT_DIR}/usr/share/sugar ]; then
-    # #?
-    cat >> ${ROOT_DIR}/home/${DEFUSER}/.Xsession <<- EOF
-matchbox-window-manager -use_titlebar no &
-sugar
-EOF
-fi
-
-# run any local postinstall scripts for the build
-PLIST_DIR=${PLIST/.packages/}
-if [ -d ${PLIST_DIR} ]; then
-    if [ -x ${PLIST_DIR}/postinst.sh ]; then
-	${PLIST_DIR}/postinst.sh ${ROOT_DIR}
-    fi
-    if [ -x ${PLIST_DIR}/postinst-local.sh ]; then
-	${PLIST_DIR}/postinst-local.sh ${ROOT_DIR}
-    fi
-fi
-
 # override sources.list with shipping version
 printf "${APT_SOURCES}\n" >${ROOT_DIR}/etc/apt/sources.list
 (chroot ${ROOT_DIR} aptitude update)
@@ -256,4 +177,6 @@ mv ${ROOT_DIR}/sbin/start-stop-daemon.REAL ${ROOT_DIR}/sbin/start-stop-daemon
 (chroot ${ROOT_DIR} aptitude clean)
 umount ${ROOT_DIR}/proc
 umount ${ROOT_DIR}/dev/pts
-umount ${ROOT_DIR}/var/cache/apt/cache
+
+# custom cleanup stuff
+cleanup_chroot_hook "${ROOT_DIR}"

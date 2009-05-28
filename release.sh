@@ -1,9 +1,9 @@
 #!/bin/bash -e
 
 # prepare a release
-for f in *.packages; do
-	desktop=$(echo $f | sed 's/\.packages//')
-	./mkchroot.sh --package-list ${f} \
+for f in configs/debxo-*; do
+	desktop=$(basename $f | sed 's/debxo-//')
+	./mkchroot.sh --config-type debxo-${desktop} \
 			--local-apt-mirror "deb http://localhost:9999/debian lenny main contrib non-free
 deb http://localhost:9999/security lenny/updates main contrib non-free" \
 			debxo-${desktop}

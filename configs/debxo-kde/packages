@@ -1,0 +1,44 @@
+# The list of packages to install onto the image should be listed here
+# (one per line).  Aptitude is used to install these, so there are is no
+# need to explicitly list dependencies.  Packages installed by debootstrap
+# plus a few others (sudo, locales) do not need to be listed here, as they
+# are always installed.
+
+# the backend stuff
+libertas-firmware
+initramfs-tools
+wireless-tools
+alsa-utils
+console-tools
+openntpd
+
+# the silly i-always-use-this-shit stuff
+less
+psmisc
+openssh-client
+diff
+bzip2
+info
+manpages-dev
+rsync
+links2
+
+# X
+xserver-xorg-core
+xserver-xorg-input-kbd
+xserver-xorg-input-mouse
+xserver-xorg-input-evdev
+xserver-xorg-video-geode
+xfonts-100dpi
+xfonts-scalable
+xfonts-base
+x11-xserver-utils
+
+# the desktop stuff
+menu
+aspell-en
+ttf-liberation
+big-cursor
+kdm
+kde
+network-manager-kde

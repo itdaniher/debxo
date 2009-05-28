@@ -5,7 +5,7 @@ firmware support unlike an ordinary PC.  The usual Debian boot CDs do
 not work, yet.  xodist builds a Debian system image in the format
 required by the firmware.
 
-See *.packages for other image flavours, and change "kde" below to the
+See configs/* for other image flavours, and change "kde" below to the
 flavour.  See README.approx before starting if you would like to cache
 the packages downloaded.
 
@@ -13,7 +13,7 @@ How to use xodist to generate a Debian KDE image for an OLPC XO:
 
 1.  build the root filesystem,
 
-	sudo ./mkchroot.sh --package-list kde.packages kde.root
+	sudo ./mkchroot.sh --package-list debxo-kde kde.root
 
 2.  make the JFFS2 filesystem,
 

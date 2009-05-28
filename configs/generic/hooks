@@ -1,0 +1,29 @@
+# Default hooks - copy & customize this for a new image build
+
+
+customize_chroot_hook()
+{
+	ROOT_DIR="$1"
+
+	# Any customizations that need to be made to the chroot after the base system
+	# has been installed (but prior to further package installation) should be
+	# put here.  $ROOT_DIR should be prefixed to any paths.
+}
+
+package_configure_hook()
+{
+	ROOT_DIR="$1"
+
+	# Any customizations that need to be made after all packages have been
+	# installed should be put here.  $ROOT_DIR should be prefixed to any
+	# paths.
+}
+
+cleanup_chroot_hook()
+{
+	ROOT_DIR="$1"
+
+	# Any customizations that need to be made after the chroot creation is
+	# complete should be put here.  $ROOT_DIR should be prefixed to any
+	# paths.
+}
