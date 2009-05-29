@@ -1,0 +1,22 @@
+# DebXO variables
+
+
+# By default, a non-root user is created (with root provided by sudo).  Set
+# the desired username here.
+DEFUSER=debian
+
+# The hostname that the image uses
+IMG_HOSTNAME=debian
+
+# Build architecture (passed to debootstrap)
+IMG_ARCH=i386
+
+# The contents of /etc/apt/sources.list file in the _final_ image.  Note that
+# during the image creation process, a different mirror (ie, a local cache)
+# can be used by supplying --local-apt-mirror.
+APT_SOURCES="deb http://http.us.debian.org/debian/ lenny main
+deb http://security.debian.org/ lenny/updates main"
+
+# The default locale
+IMG_LOCALE="en_US.UTF-8 UTF-8"
+

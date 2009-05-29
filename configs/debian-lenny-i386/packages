@@ -1,0 +1,18 @@
+# The list of packages to install onto the image should be listed here
+# (one per line).  Aptitude is used to install these, so there are is no
+# need to explicitly list dependencies.  Packages installed by debootstrap
+# plus a few others (sudo, locales) do not need to be listed here, as they
+# are always installed.
+
+# the backend stuff
+initramfs-tools
+wireless-tools
+alsa-utils
+console-tools
+grub
+linux-image-2.6-686
+
+# the silly i-always-use-this-shit stuff
+less
+psmisc
+openssh-client
