@@ -47,10 +47,7 @@ create_fstab()
 	fi
 
 	cat >>${mntpt}/etc/fstab<<EOF
-devpts /dev/pts devpts gid=5,mode=620 0 0
-tmpfs /dev/shm tmpfs defaults,size=15% 0 0
 proc /proc proc defaults 0 0
-sysfs /sys sysfs defaults 0 0
 none /ofw promfs defaults 0 0
 tmpfs /var/cache/apt/cache tmpfs defaults 0 0
 EOF
