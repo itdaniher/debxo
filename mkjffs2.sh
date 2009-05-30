@@ -88,7 +88,6 @@ create_jffs2()
 	root_dir="$1"
 	out="$2"
 
-	# XXX:  do we want to switch to lzo?  (mkfs.jffs2 -X lzo)
 	mkfs.jffs2 -n -e128KiB -r ${root_dir} -o ${out}.pre
 	sumtool -n -p -e 128KiB -i ${out}.pre -o ${out}
 	rm -f ${out}.pre
