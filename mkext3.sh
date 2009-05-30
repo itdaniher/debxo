@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright © 2008  Andres Salomon <dilinger@queued.net>
+# Copyright © 2008-2009  Andres Salomon <dilinger@collabora.co.uk>
 #
 # This file is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -22,6 +22,8 @@ IMG_NAME=""
 ROOT_DIR=""
 
 . ./functions.sh
+
+CONFIG_TYPE=generic
 
 # @img - fs image to attach loop device to
 # @offset - if the image is partitioned, the offset to attach at
@@ -149,7 +151,6 @@ mk_ext3_fs()
 	# populate the filesystem
 	mk_mount "$img" "ext3" "$partition_start"
 	cp -ra "$root_dir"/* "$MOUNT_POINT" || true
-	create_fstab "$MOUNT_POINT" "ext3"
 	grub_install "$img" "$MOUNT_POINT"
 	rm_mount "$MOUNT_POINT"
 }
@@ -162,6 +163,7 @@ usage()
 	echo "Options:" 1>&2
 	echo "  -l <label>    Image label" 1>&2
 	echo "  -s <size>     Root filesystem size (in MB)" 1>&2
+	echo "  --config-type <config>    directory name in configs/ to use" 1>&2
 	echo "" 1>&2
 	exit 1
 }
@@ -169,6 +171,14 @@ usage()
 while test $# != 0
 do
 	case $1 in
+	--config-type)
+		CONFIG_TYPE=$2
+		[ -d ./configs/${CONFIG_TYPE} ] || {
+			echo "Error: can't find directory './configs/${CONFIG_TYPE}/'!" 1>&2
+			exit 2
+		}
+		shift
+		;;
 	-l)
 		IMG_LABEL=$2
 		shift
@@ -205,8 +215,19 @@ if [ ! -d "$ROOT_DIR" ]; then
 fi
 
 check_for_cmds losetup parted mke2fs tune2fs grub || exit 1
-create_fstab ${ROOT_DIR} ext3
-create_ofwboot ${ROOT_DIR} ext3
+
+# create image's /etc/fstab
+if [ ! -f ./configs/${CONFIG_TYPE}/fstab-ext3 ]; then
+	echo "*** Unable to find fstab-ext3!" 1>&2
+	exit 1
+fi
+sed 's/[[:space:]]#.*//' ./configs/${CONFIG_TYPE}/fstab-ext3 > ${ROOT_DIR}/etc/fstab
+
+# TODO: this needs to go into an OFW package; here it's a hack
+# create image's /boot/olpc.fth
+if [ -f ./configs/${CONFIG_TYPE}/olpc.fth-ext3 ]; then
+	cp ./configs/${CONFIG_TYPE}/olpc.fth-ext3 ${ROOT_DIR}/boot/olpc.fth
+fi
 
 create_bootable_img ${IMG_NAME} ${ROOT_SIZE}
 mk_ext3_fs ${IMG_NAME} ${IMG_LABEL} ${ROOT_DIR}

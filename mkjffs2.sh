@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright © 2008  Andres Salomon <dilinger@queued.net>
+# Copyright © 2008-2009  Andres Salomon <dilinger@collabora.co.uk>
 #
 # This file is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
@@ -18,20 +18,43 @@
 
 . ./functions.sh
 
+CONFIG_TYPE=generic
+
 usage()
 {
 	echo "" 1>&2
-	echo "Usage: $0 <root directory> <img>" 1>&2
+	echo "Usage: $0 [<options>] <root directory> <img>" 1>&2
+	echo "" 1>&2
+	echo "Options:" 1>&2
+	echo "  --config-type <config>    directory name in configs/ to use" 1>&2
 	echo "" 1>&2
 	exit 1
 }
 
-if [ "$#" != "2" ]; then
-	usage
-fi
-
-ROOT_DIR=$1
-IMG_NAME=$2
+while test $# != 0
+do
+	case $1 in
+	--config-type)
+		CONFIG_TYPE=$2
+		[ -d ./configs/${CONFIG_TYPE} ] || {
+			echo "Error: can't find directory './configs/${CONFIG_TYPE}/'!" 1>&2
+			exit 2
+		}
+		shift
+		;;
+	*)
+		if [ "$#" != "2" ]; then
+			echo "Unknown option $1" 1>&2
+			usage
+		else
+			ROOT_DIR=$1
+			IMG_NAME=$2
+			shift
+		fi
+		;;
+	esac
+	shift
+done
 
 if [ "${IMG_NAME}" == "${IMG_NAME/.img/.dat}" ]; then
 	DAT_NAME=${IMG_NAME}.dat
@@ -46,8 +69,19 @@ if [ ! -d "${ROOT_DIR}" ]; then
 fi
 
 check_for_cmds mkfs.jffs2 sumtool || exit 1
-create_fstab ${ROOT_DIR} jffs2
-create_ofwboot ${ROOT_DIR} jffs2
+
+# create image's /etc/fstab
+if [ ! -f ./configs/${CONFIG_TYPE}/fstab-jffs2 ]; then
+	echo "*** Unable to find fstab-jffs2!" 1>&2
+	exit 1
+fi
+sed 's/[[:space:]]#.*//' ./configs/${CONFIG_TYPE}/fstab-jffs2 > ${ROOT_DIR}/etc/fstab
+
+# TODO: this needs to go into an OFW package; here it's a hack
+# create image's /boot/olpc.fth
+if [ -f ./configs/${CONFIG_TYPE}/olpc.fth-jffs2 ]; then
+	cp ./configs/${CONFIG_TYPE}/olpc.fth-jffs2 ${ROOT_DIR}/boot/olpc.fth
+fi
 
 create_jffs2()
 {

@@ -1,0 +1,8 @@
+# Default fstab for jffs2 images - copy & customize this for a new image build
+
+# /etc/fstab: static file system information 
+#
+# <file system>	<mount point>	<type>	<options>	<dump>	<pass>
+proc		/proc		proc	defaults	0	0	# <partition size in MB>
+mtd:root	/		jffs2	defaults,noatime 0	0	# 50
+mtd:boot	/boot		jffs2	defaults,noatime 0	0	#

@@ -1,0 +1,25 @@
+\ OLPC boot script
+
+\ fetch the /chosen/bootpath property
+" /chosen" find-package  if                       ( phandle )
+  " bootpath" rot  get-package-property  0=  if   ( propval$ )
+    get-encoded-string                            ( bootpath$ )
+    [char] \ left-parse-string  2nip              ( dn$ )
+
+    \ store the first part of bootpath (up to the '\') in $DN
+    dn-buf place                                  ( )
+  then
+then
+
+" ro root=LABEL=DebXO video=lxfb fbcon=font:SUN12x22" to boot-file
+game-key-mask h# 80 and if
+	\ boot from backup kernel
+	" ${DN}\vmlinuz.old" expand$ to boot-device
+	" ${DN}\initrd.img.old" expand$ to ramdisk
+else
+	\ boot from regular kernel
+	" ${DN}\vmlinuz" expand$ to boot-device
+	" ${DN}\initrd.img" expand$ to ramdisk
+then
+dcon-unfreeze
+boot

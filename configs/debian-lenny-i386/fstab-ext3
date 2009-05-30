@@ -1,0 +1,6 @@
+# /etc/fstab: static file system information 
+#
+# <file system>	<mount point>	<type>	<options>	<dump>	<pass>
+proc		/proc		proc	defaults	0	0	# <partition size in MB>
+LABEL=Boot	/boot		ext3	defaults	0	2	# 50
+LABEL=Root	/		ext3	errors=remount-ro  0	1	# 400
