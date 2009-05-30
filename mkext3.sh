@@ -16,8 +16,6 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-ROOT_SIZE="1998"
-IMG_LABEL="DebXO"
 IMG_NAME=""
 ROOT_DIR=""
 
@@ -49,41 +47,19 @@ detach_loop()
 	losetup -d "$1"
 }
 
-# @img - fs image to mount
-# @type - fs type to mount
-# @offset - if the image is partitioned, the offset to mount at
-#
-# sets $MOUNT_POINT with the path of the newly created (and mounted) dir
-mk_mount()
-{
-	img="$1"
-	type="$2"
-	offset="$3"
-
-	if [ "$offset" != "" ]; then
-		offset=",offset=$offset"
-	fi
-
-	MOUNT_POINT=$(mktemp)
-	rm -f $MOUNT_POINT
-	mkdir $MOUNT_POINT
-
-	mount "$img" "$MOUNT_POINT" -o loop$offset -t "$type"
-}
-
-# @mntpt - directory to umount and delete
-rm_mount()
-{
-	umount "$1"
-	rmdir "$1"
-}
-
 # @img - image name to create
-# @size - image size
 create_bootable_img()
 {
 	img="$1"
-	size="$2"
+
+	# get the total size by summing all the partition sizes (listed in fstab comments)
+	partition_sizes=`grep '^LABEL=' configs/${CONFIG_TYPE}/fstab-ext3 | \
+			sed 's/.*#[[:space:]]\+\([0-9]\+\)$/\1/' | xargs echo | tr ' ' +`
+	size=$(($partition_sizes))
+
+	# there's some partition overhead; pad the image so that parted doesn't whine
+	overhead=`echo | awk "{ printf(\"%d\n\", 0.014 * $size); }"`
+	size=$((size + overhead))
 
 	# first, create a sparse image
 	minus_size=$(($size * 6 / 100))
@@ -92,7 +68,13 @@ create_bootable_img()
 
 	# fill in the partition table
 	parted -s "$img" "mklabel msdos"
-	parted -s "$img" "mkpart primary ext2 0 -1"
+	prior=0
+	grep '^LABEL=' configs/${CONFIG_TYPE}/fstab-ext3 | \
+			sed 's/.*#[[:space:]]\+\([0-9]\+\)$/\1/' | while read s; do
+		end=$((prior + s))
+		parted -s "$img" "mkpart primary ext2 $prior $end"
+		prior=$end
+	done
 	parted -s "$img" "set 1 boot on"
 }
 
@@ -111,12 +93,21 @@ grub_install()
 default 0
 timeout 5
 color cyan/blue white/blue
+EOF
+	label=`sed -ne 's/^LABEL=\(.\+\)[[:space:]]\+\/[[:space:]]\+.*/\1/p' configs/${CONFIG_TYPE}/fstab-ext3`
+	prefix=
+	grep -q ' ${mntpt}/boot ' /proc/mounts && prefix=/boot
+	for kern in ${mntpt}/boot/vmlinuz-*; do
+		v=$(basename $kern | sed 's/vmlinuz-//')
+		cat >>${mntpt}/boot/grub/menu.lst<<EOF
 
-title		$IMG_LABEL
+title		Debian GNU/Linux, kernel ${v}
 root		(hd0,0)
-kernel		/vmlinuz root=LABEL=${IMG_LABEL} ro
+kernel		${prefix}/vmlinuz-${v} root=LABEL=${label} ro
+initrd		${prefix}/initrd.img-${v}
 boot
 EOF
+	done
 
 	# grub-install is pretty broken, so we do this manually
 	geom=`parted -s "$img" "unit chs" "print" | sed -ne 's/geometry: \([0-9]\+\),\([0-9]\+\),\([0-9]\+\)/:\1 \2 \3:/p' | cut -d: -f2`
@@ -130,29 +121,90 @@ EOF
 }
 
 # @img - image to create a filesystem on
-# @label - fs label
 # @root_dir - root directory to populate the fs with
 mk_ext3_fs()
 {
 	img="$1"
-	label="$2"
-	root_dir="$3"
+	root_dir="$2"
 
-	# parted 1.8 added --machine for easier parsing; however,
-	# debian still has 1.7 in unstable.
-	partition_start=$(parted -s "$img" "unit B" "print" | sed -ne 's/^ 1[[:space:]]\+//p' | cut -dB -f1)
+	# create root mount point
+	mount_point_root=$(mktemp)
+	rm -f $mount_point_root
+	mkdir $mount_point_root
 
-	# create the filesystem
-	attach_loop "$img" "$partition_start"
-	mke2fs -q -L "$label" -m0 -j "$LOOP_DEV"
-	tune2fs -c0 -i0 "$LOOP_DEV"
-	detach_loop "$LOOP_DEV"
+	i=1
+	sed -ne 's/^LABEL=//p' configs/${CONFIG_TYPE}/fstab-ext3 | \
+			while read name mntpt fstype extra; do
+		partition_start=$(parted -m -s "$img" "unit B" "print" | grep "^$i" | cut -d: -f2 | cut -dB -f1)
+		partition_size=$(parted -m -s "$img" "unit B" "print" | grep "^$i" | cut -d: -f4 | cut -dB -f1)
+		bs=1024
+	
+		# create the filesystems/swap
+		attach_loop "$img" "$partition_start"
+		if [ "$fstype" = "ext3" ]; then
+			mke2fs -q -b $bs -L "$name" -m0 -j "$LOOP_DEV" $((partition_size / bs))
+			tune2fs -c0 -i0 "$LOOP_DEV"	# XXX: this is from OLPC days; do we still want this?
+		elif [ "$fstype" = "ext2" ]; then
+			mke2fs -q -b $bs -L "$name" -m0 "$LOOP_DEV" $((partition_size / bs))
+			tune2fs -c0 -i0 "$LOOP_DEV"
+		elif [ "$fstype" = "swap" ]; then
+			mkswap -L "$name" "$LOOP_DEV" $((partition_size / bs))
+		fi
+		detach_loop "$LOOP_DEV"
 
+		# mount the root partition if it's found
+		if [ "$mntpt" = "/" ]; then
+			mount "$img" "${mount_point_root}" -o loop,offset=$partition_start -t $fstype
+		fi
+
+		i=$((i + 1))
+	done
+
+	# mount the rest of the partitions (working around /boot coming before /)
+	sed -ne 's/^LABEL=//p' configs/${CONFIG_TYPE}/fstab-ext3 | \
+			while read name mntpt fstype extra; do
+
+		# / is already mounted
+		if [ "$mntpt" = "/" ]; then
+			continue
+		fi
+
+		# if $mntpt doesn't start with '/', don't mount it
+		if [ "${mntpt##/}" = "$mntpt" ]; then
+			continue
+		fi
+
+		# parted 1.8 added --machine for easier parsing; however,
+		# debian still has 1.7 in unstable.
+		partition_start=$(parted -s "$img" "unit B" "print" | sed -ne "s/^ $i[[:space:]]\+//p" | cut -dB -f1)
+	
+		[ -d "${mount_point_root}${mntpt}" ] || mkdir -p "${mount_point_root}${mntpt}"
+		mount "$img" "${mount_point_root}${mntpt}" -o loop,offset=$partition_start -t $fstype
+	done
+	
 	# populate the filesystem
-	mk_mount "$img" "ext3" "$partition_start"
-	cp -ra "$root_dir"/* "$MOUNT_POINT" || true
-	grub_install "$img" "$MOUNT_POINT"
-	rm_mount "$MOUNT_POINT"
+	cp -ra "$root_dir"/* "$mount_point_root" || true
+	grub_install "$img" "$mount_point_root"
+
+	# umount the filesystem
+	sed -ne 's/^LABEL=//p' configs/${CONFIG_TYPE}/fstab-ext3 | \
+			while read name mntpt fstype extra; do
+
+		# don't unmount / yet
+		if [ "$mntpt" = "/" ]; then
+			continue
+		fi
+
+		# if $mntpt doesn't start with '/', it's not mounted
+		if [ "${mntpt##/}" = "$mntpt" ]; then
+			continue
+		fi
+
+		umount "${mount_point_root}${mntpt}"
+	done
+
+	umount "${mount_point_root}"
+	rmdir "${mount_point_root}" 
 }
 
 usage()
@@ -161,8 +213,6 @@ usage()
 	echo "Usage: $0 [<options>] <root directory> <img>" 1>&2
 	echo "" 1>&2
 	echo "Options:" 1>&2
-	echo "  -l <label>    Image label" 1>&2
-	echo "  -s <size>     Root filesystem size (in MB)" 1>&2
 	echo "  --config-type <config>    directory name in configs/ to use" 1>&2
 	echo "" 1>&2
 	exit 1
@@ -177,14 +227,6 @@ do
 			echo "Error: can't find directory './configs/${CONFIG_TYPE}/'!" 1>&2
 			exit 2
 		}
-		shift
-		;;
-	-l)
-		IMG_LABEL=$2
-		shift
-		;;
-	-s)
-		ROOT_SIZE=$2
 		shift
 		;;
 	*)
@@ -229,8 +271,8 @@ if [ -f ./configs/${CONFIG_TYPE}/olpc.fth-ext3 ]; then
 	cp ./configs/${CONFIG_TYPE}/olpc.fth-ext3 ${ROOT_DIR}/boot/olpc.fth
 fi
 
-create_bootable_img ${IMG_NAME} ${ROOT_SIZE}
-mk_ext3_fs ${IMG_NAME} ${IMG_LABEL} ${ROOT_DIR}
+create_bootable_img ${IMG_NAME}
+mk_ext3_fs ${IMG_NAME} ${ROOT_DIR}
 
 #mount ${IMG_NAME}.ext3 $MOUNT_POINT -o loop,offset=$OS_PART1_BEGIN -t ext3
 #cp -r "$ROOT_DIR"/* $MOUNT_POINT
