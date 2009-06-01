@@ -99,6 +99,10 @@ EOF
 	grep -q ' ${mntpt}/boot ' /proc/mounts && prefix=/boot
 	for kern in ${mntpt}/boot/vmlinuz-*; do
 		v=$(basename $kern | sed 's/vmlinuz-//')
+		if [ "${v}" = '*' ]; then
+			echo "*** Error: no kernel images found in /boot!" 1>&2
+			exit 1
+		fi
 		cat >>${mntpt}/boot/grub/menu.lst<<EOF
 
 title		Debian GNU/Linux, kernel ${v}
