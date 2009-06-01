@@ -8,7 +8,8 @@ for f in configs/debxo-*; do
 deb http://localhost:9999/security lenny/updates main contrib non-free" \
 			debxo-${desktop}
 	./mkjffs2.sh debxo-${desktop} ${desktop}.img
-	./mkext3.sh debxo-${desktop} debxo-${desktop}.ext3.img
+	./mkext3.sh --config-type debxo-${desktop} debxo-${desktop} \
+			debxo-${desktop}.ext3.img
 	gzip debxo-${desktop}.ext3.img
 
 	mkdir -p ext3 jffs2
