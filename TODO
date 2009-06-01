@@ -1,6 +1,10 @@
 roadmap
 -------
 
+ - switch from aptitude to apt-get?  aptitude has some annoying bugs
+   (http://bugs.debian.org/529925) that have been open since *2002*!
+   And the code's in C++, which makes me want to cry.
+
 0.5
   * automatically start X for desktops that don't have a display manager; that
     is, !gnome and !kde.  http://bbs.archlinux.org/viewtopic.php?id=49160
