@@ -27,6 +27,7 @@ usage()
 	echo "" 1>&2
 	echo "Options:" 1>&2
 	echo "  --config-type <config>    directory name in configs/ to use" 1>&2
+	echo "  --help                    display this help screen" 1>&2
 	echo "" 1>&2
 	exit 1
 }
@@ -41,6 +42,9 @@ do
 			exit 2
 		}
 		shift
+		;;
+	--help|-h)
+		usage
 		;;
 	*)
 		if [ "$#" != "2" ]; then

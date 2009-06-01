@@ -32,6 +32,7 @@ usage()
 	echo "" 1>&2
 	echo "Options:" 1>&2
 	echo "  --config-type <config>    directory name in configs/ to use" 1>&2
+	echo "  --help	                  display this help screen" 1>&2
 	echo "  --local-apt-mirror <srcs> sources.list for local mirror" 1>&2
 	echo "" 1>&2
 	exit 1
@@ -51,6 +52,9 @@ do
 	--local-apt-mirror)
 		LOCAL_APT_MIRROR="$2"
 		shift
+		;;
+	--help|-h)
+		usage
 		;;
 	*)
 		if [ "$#" != "1" ]; then
