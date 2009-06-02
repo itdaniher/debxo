@@ -14,20 +14,53 @@ case "$1" in
 	;;
 esac
 
+# find the disk to install to
+find_target()
+{
+	SRC=$1
+	
+	for f in /sys/block/[sh]d[a-z]; do
+		bdev=$(basename $f)
+		if [ "$bdev" = "$SRC" ]; then
+			continue
+		fi
+		# the first block device that's not root?  take it!
+		echo "$bdev"
+		break
+	done
+}
+
 do_install()
 {
 	echo
 	echo
-	echo "Triggering installer!"
-	ROOT_SRC=$(grep ' /root ' /proc/mounts | cut -d' ' -f1)
-	ROOT_SRC=$(readlink -f $ROOT_SRC)
-
-	echo "root src: $ROOT_SRC"
-	[ -d /root/etc ] || {
+	echo
+	echo "Starting installer!"
+	if [ ! -d /root/etc ]; then
 		echo "Error: /root doesn't appear to have a valid filesystem mounted!"
 		exit 1
-	}
+	fi
 
+	ROOT_SRC=$(grep ' /root ' /proc/mounts | cut -d' ' -f1)
+	ROOT_SRC=$(readlink -f $ROOT_SRC | sed 's/.*\/\([hs]d[a-z]\)[0-9]\+$/\1/')
+
+	TARGET=$(find_target "$ROOT_SRC")
+
+	if [ -z "$TARGET" ]; then
+		echo "Error: couldn't find drive to install to!"
+		exit 1
+	fi
+	
+	echo "Copying data from $ROOT_SRC => $TARGET"
+	echo "IF THIS IS INCORRECT, REBOOT NOW OR YOU WILL LOSE DATA!  (waiting 15s)"
+	# wait 15s for user realize that they've made a mistake
+	sleep 15
+
+	echo "Too late, starting copy..."
+sleep 20
+
+
+	echo "Done.  Remove installer and reboot."
 }
 
 for x in $(cat /proc/cmdline); do
