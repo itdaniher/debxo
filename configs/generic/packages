@@ -7,4 +7,5 @@
 # do not need to be listed here, as they are always installed.
 
 locales
+busybox
 sudo
