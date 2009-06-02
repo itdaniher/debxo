@@ -94,6 +94,7 @@ default 0
 timeout 5
 color cyan/blue white/blue
 EOF
+	installer_added=0
 	label=`sed -ne 's/^LABEL=\(.\+\)[[:space:]]\+\/[[:space:]]\+.*/\1/p' configs/${CONFIG_TYPE}/fstab-ext3`
 	prefix=
 	grep -q ' ${mntpt}/boot ' /proc/mounts && prefix=/boot
@@ -111,6 +112,18 @@ kernel		${prefix}/vmlinuz-${v} root=LABEL=${label} ro
 initrd		${prefix}/initrd.img-${v}
 boot
 EOF
+		if [ "$installer_added" = "0" ]; then
+			installer_added=1
+			cat >>${mntpt}/boot/grub/menu.lst<<EOF
+
+title           Debian GNU/Linux Installer
+root            (hd0,0)
+kernel          ${prefix}/vmlinuz-${v} root=LABEL=${label} ro installer
+initrd          ${prefix}/initrd.img-${v}
+boot
+EOF
+		fi
+
 	done
 
 	# grub-install is pretty broken, so we do this manually

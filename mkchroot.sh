@@ -140,6 +140,10 @@ EOF
 # set the default locale
 echo "${IMG_LOCALE}" >${ROOT_DIR}/etc/locale.gen
 
+# add support for installation onto a block device
+mkdir -p ${ROOT_DIR}/etc/initramfs-tools/scripts/local-bottom
+cp installer ${ROOT_DIR}/etc/initramfs-tools/scripts/local-bottom/
+
 # run any customizations necessary pre-package install
 customize_chroot_hook "$ROOT_DIR"
 

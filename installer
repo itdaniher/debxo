@@ -1,0 +1,40 @@
+#!/bin/sh -e
+
+PREREQS=""
+
+prereqs()
+{
+	echo "$PREREQS"
+}
+
+case "$1" in
+	prereqs)
+		prereqs
+		exit 0
+	;;
+esac
+
+do_install()
+{
+	echo
+	echo
+	echo "Triggering installer!"
+	ROOT_SRC=$(grep ' /root ' /proc/mounts | cut -d' ' -f1)
+	ROOT_SRC=$(readlink -f $ROOT_SRC)
+
+	echo "root src: $ROOT_SRC"
+	[ -d /root/etc ] || {
+		echo "Error: /root doesn't appear to have a valid filesystem mounted!"
+		exit 1
+	}
+
+}
+
+for x in $(cat /proc/cmdline); do
+	case $x in
+	installer)
+		do_install
+		;;
+	esac
+done
+
