@@ -50,17 +50,24 @@ do_install()
 		echo "Error: couldn't find drive to install to!"
 		exit 1
 	fi
+
+	# don't keep fs mounted while copying it
+	umount /root
 	
-	echo "Copying data from $ROOT_SRC => $TARGET"
-	echo "IF THIS IS INCORRECT, REBOOT NOW OR YOU WILL LOSE DATA!  (waiting 15s)"
 	# wait 15s for user realize that they've made a mistake
+	echo "Copying data from        $ROOT_SRC  =>  $TARGET"
+	echo "IF THIS IS INCORRECT, REBOOT NOW OR YOU WILL LOSE DATA!  (waiting 15s)"
 	sleep 15
 
 	echo "Too late, starting copy..."
-sleep 20
+	# ideally, we'll resize the filesystem/partitions later..
+	dd if=/dev/$ROOT_SRC of=/dev/$TARGET bs=4k
 
-
-	echo "Done.  Remove installer and reboot."
+	echo "Done.  Remove installer media."
+	while [ -d /sys/block/$ROOT_SRC ]; do
+		sleep 1
+	done
+	reboot
 }
 
 for x in $(cat /proc/cmdline); do
