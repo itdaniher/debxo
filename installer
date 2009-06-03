@@ -38,7 +38,7 @@ do_install()
 	echo "Starting installer!"
 	if [ ! -d /root/etc ]; then
 		echo "Error: /root doesn't appear to have a valid filesystem mounted!"
-		exit 1
+		sleep 9999999999
 	fi
 
 	ROOT_SRC=$(grep ' /root ' /proc/mounts | cut -d' ' -f1)
@@ -48,7 +48,7 @@ do_install()
 
 	if [ -z "$TARGET" ]; then
 		echo "Error: couldn't find drive to install to!"
-		exit 1
+		sleep 9999999999
 	fi
 
 	# don't keep fs mounted while copying it
