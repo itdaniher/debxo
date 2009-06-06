@@ -97,53 +97,91 @@ create_jffs2()
 	rm -f ${out}.pre
 }
 
-do_sha256()
-{
-	f=$1
-	eblocks=$((`stat --printf "%s\n" $f` / (128*1024)))
-	for b in $(seq 0 $(($eblocks - 1))); do
-		sha=$(dd status=noxfer bs=128KiB skip=$b count=1 if=$f 2>/dev/null | sha256sum | cut -d\  -f1)
-		echo "eblock: `printf '%x' $b` sha256 $sha" >> ${IMG_NAME}
-	done
-}
-
 partition_map()
 {
-	# 0x190 * 128KiB = 50MiB boot, and the rest for root
 	cat >${IMG_NAME}<<EOF
 data:  ${DAT_NAME}
 erase-all
-partitions:  boot 190  root -1
-set-partition: boot 
+EOF
+
+	# partition size map
+	printf "partitions:" >> ${IMG_NAME}
+	sed -ne 's/^mtd://p' configs/${CONFIG_TYPE}/fstab-jffs2 | \
+			while read name mntpt fstype extra; do
+		size=$(echo $extra | sed -ne 's/.*[[:space:]]\+#[[:space:]]\+//p')
+		if [ "${size}" = "" ]; then
+			size="-1"
+		else
+			# size in fstab is in MB; convert to 128KiB chunks (in hex)
+			# MB * (1024/128)
+			size=$((size * 8))
+			size=`printf "%x\n" $size`
+		fi
+		printf "  $name $size" >> ${IMG_NAME}
+	done
+	printf "\n" >> ${IMG_NAME}
+
+	# individual partitions
+	sed -ne 's/^mtd://p' configs/${CONFIG_TYPE}/fstab-jffs2 | \
+			while read name mntpt fstype extra; do
+		cat >>${IMG_NAME}<<EOF
+set-partition: ${name}
 mark-pending: 0
 EOF
-	do_sha256 "_boot.img"
-	cat >>${IMG_NAME}<<EOF
+		# sha256 summing for data
+		eblocks=$((`stat --printf "%s\n" _${name}.img` / (128*1024)))
+		for b in $(seq 0 $(($eblocks - 1))); do
+			sha=$(dd status=noxfer bs=128KiB skip=$b count=1 if=_${name}.img 2>/dev/null \
+					| sha256sum | cut -d\  -f1)
+			echo "eblock: `printf '%x' $b` sha256 $sha" >> ${IMG_NAME}
+		done
+		cat >>${IMG_NAME}<<EOF
 cleanmarkers
 mark-complete: 0
-set-partition: root
-mark-pending: 0
 EOF
-	do_sha256 "_root.img"
-	cat >>${IMG_NAME}<<EOF
-cleanmarkers
-mark-complete: 0
-EOF
+	done
 }
 
-# create the boot partition
-ln -s . ${ROOT_DIR}/boot/boot
-create_jffs2 ${ROOT_DIR}/boot _boot.img
-rm -f ${ROOT_DIR}/boot/boot
+# move separate partitions out of the way
+sed -ne 's/^mtd://p' configs/${CONFIG_TYPE}/fstab-jffs2 | \
+		while read name mntpt fstype extra; do
+	if [ "$mntpt" = "/" ]; then
+		continue
+	fi
 
-# create the root partition
-mv ${ROOT_DIR}/boot _boot
-mkdir ${ROOT_DIR}/boot
-create_jffs2 ${ROOT_DIR} _root.img
-rmdir ${ROOT_DIR}/boot
-mv _boot ${ROOT_DIR}/boot
+	mv ${ROOT_DIR}/${mntpt} "_${name}"
+	mkdir ${ROOT_DIR}/${mntpt}
+done
+
+# create partitions
+sed -ne 's/^mtd://p' configs/${CONFIG_TYPE}/fstab-jffs2 | \
+		while read name mntpt fstype extra; do
+	if [ "$mntpt" = "/" ]; then
+		create_jffs2 ${ROOT_DIR} "_${name}.img"
+
+	else
+		create_jffs2 "_${name}" "_${name}.img"
+	fi
+done
+
+# move separate partitions back into the chroot
+sed -ne 's/^mtd://p' configs/${CONFIG_TYPE}/fstab-jffs2 | \
+		while read name mntpt fstype extra; do
+	if [ "$mntpt" = "/" ]; then
+		continue
+	fi
+
+	rmdir ${ROOT_DIR}/${mntpt}
+	mv "_${name}" ${ROOT_DIR}/${mntpt}
+done
+
+# partition map is used by OFW for partition layout and sha256 checksums
+partition_map
 
 # concat partitions, finish up
-partition_map
-cat _boot.img _root.img > ${DAT_NAME}
-rm -f _boot.img _root.img
+rm -f ${DAT_NAME}
+sed -ne 's/^mtd://p' configs/${CONFIG_TYPE}/fstab-jffs2 | \
+		while read name mntpt fstype extra; do
+	cat "_${name}.img" >> ${DAT_NAME}
+	rm -f "_${name}.img"
+done
