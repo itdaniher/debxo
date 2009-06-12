@@ -128,7 +128,7 @@ EOF
 
 	# grub-install is pretty broken, so we do this manually
 	geom=`parted -s "$img" "unit chs" "print" | sed -ne 's/geometry: \([0-9]\+\),\([0-9]\+\),\([0-9]\+\)/:\1 \2 \3:/p' | cut -d: -f2`
-	grub --device-map=/dev/null <<EOF
+	grub --batch --device-map=/dev/null <<EOF
 device (hd0) $img
 geometry (hd0) $geom
 root (hd0,0)
