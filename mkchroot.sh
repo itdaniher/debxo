@@ -144,12 +144,14 @@ echo "${IMG_LOCALE}" >${ROOT_DIR}/etc/locale.gen
 mkdir -p ${ROOT_DIR}/etc/initramfs-tools/scripts/local-bottom
 cp installer ${ROOT_DIR}/etc/initramfs-tools/scripts/local-bottom/
 
+# make sure dpkg doesn't attempt to prompt for input
+export DEBIAN_FRONTEND=noninteractive
+export DEBCONF_PRIORITY=critical
+
 # run any customizations necessary pre-package install
 customize_chroot_hook "$ROOT_DIR"
 
 # initialize apt
-export DEBIAN_FRONTEND=noninteractive
-export DEBCONF_PRIORITY=critical
 printf "${LOCAL_APT_MIRROR}\n" >${ROOT_DIR}/etc/apt/sources.list
 (chroot ${ROOT_DIR} aptitude update)
 
