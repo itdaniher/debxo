@@ -32,6 +32,7 @@ start_logging()
 {
     logpipe="$1".pipe
     trap "rm -f $logpipe" 0
+    rm -f $logpipe
     mknod $logpipe p
     tee "$1".log <$logpipe &
     trap "kill $!; rm -f $logpipe" 0
