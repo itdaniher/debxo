@@ -185,3 +185,5 @@ sed -ne 's/^mtd://p' configs/${CONFIG_TYPE}/fstab-jffs2 | \
 	cat "_${name}.img" >> ${DAT_NAME}
 	rm -f "_${name}.img"
 done
+
+exit 0

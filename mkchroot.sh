@@ -190,3 +190,5 @@ umount ${ROOT_DIR}/dev/pts
 
 # custom cleanup stuff
 cleanup_chroot_hook "${ROOT_DIR}"
+
+exit 0

@@ -298,3 +298,5 @@ mk_ext3_fs ${IMG_NAME} ${ROOT_DIR}
 #mount ${IMG_NAME}.ext3 $MOUNT_POINT -o loop,offset=$OS_PART1_BEGIN -t ext3
 #cp -r "$ROOT_DIR"/* $MOUNT_POINT
 #umount $MOUNT_POINT
+
+exit 0
