@@ -86,8 +86,6 @@ if [ "$UID" != "0" ]; then
 	exit 1
 fi
 
-start_logging $ROOT_DIR
-
 # load config-specific values
 . ./configs/${CONFIG_TYPE}/variables
 . ./configs/${CONFIG_TYPE}/hooks
