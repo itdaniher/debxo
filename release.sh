@@ -7,7 +7,7 @@ for f in configs/debxo-*; do
 			--local-apt-mirror "deb http://localhost:9999/debian lenny main contrib non-free
 deb http://localhost:9999/security lenny/updates main contrib non-free" \
 			debxo-${desktop}
-	./mkjffs2.sh debxo-${desktop} ${desktop}.img
+	./mkjffs2.sh --config-type debxo-${desktop} debxo-${desktop} ${desktop}.img
 	./mkext3.sh --config-type debxo-${desktop} debxo-${desktop} \
 			debxo-${desktop}.ext3.img
 	gzip debxo-${desktop}.ext3.img
