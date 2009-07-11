@@ -24,7 +24,10 @@ customize_chroot_hook()
 	# put here.  $ROOT_DIR should be prefixed to any paths.
 	
 	mkdir ${ROOT_DIR}/ofw
-	
+
+	# OFW needs this to boot w/ partitions
+	ln -s . ${ROOT_DIR}/boot/boot
+
 	# Apt can't deal w/ jffs2's lack of mmap, so we keep apt's cache on tmpfs
 	# (see <http://bugs.debian.org/314334>).
 	mkdir ${ROOT_DIR}/var/cache/apt/cache
