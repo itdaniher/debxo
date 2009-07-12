@@ -15,7 +15,8 @@ IMG_ARCH=i386
 # during the image creation process, a different mirror (ie, a local cache)
 # can be used by supplying --local-apt-mirror.
 APT_SOURCES="deb http://http.us.debian.org/debian/ lenny main contrib non-free
-deb http://security.debian.org/ lenny/updates main contrib non-free"
+deb http://security.debian.org/ lenny/updates main contrib non-free
+deb http://www.backports.org/debian lenny-backports main contrib non-free"
 
 # The default locale
 IMG_LOCALE="en_US.UTF-8 UTF-8"

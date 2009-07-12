@@ -6,7 +6,8 @@
 
 # the backend stuff
 libertas-firmware
-initramfs-tools
+olpc-xo1-hw/lenny-backports
+initramfs-tools/lenny-backports
 wireless-tools
 alsa-utils
 console-tools
@@ -28,7 +29,7 @@ xserver-xorg-core
 xserver-xorg-input-kbd
 xserver-xorg-input-mouse
 xserver-xorg-input-evdev
-xserver-xorg-video-geode
+xserver-xorg-video-geode/lenny-backports
 xfonts-100dpi
 xfonts-scalable
 xfonts-base
