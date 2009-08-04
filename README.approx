@@ -17,11 +17,11 @@ security        http://security.debian.org/
 	% sudo /etc/init.d/approx restart
 
 4.  follow README, but during the creation of the root filesystem, add
-the --mirror option, like this:
+the --local-apt-mirror option, like this:
 
         sudo ./mkchroot.sh \
-            --package-list kde.packages \
-            --local-apt-mirror "deb http://localhost:9999/debian lenny main contrib non-free
+            --config-type debxo-kde \
+            --local-apt-mirror \
+"deb http://localhost:9999/debian lenny main contrib non-free
 deb http://localhost:9999/security lenny/updates main contrib non-free" \
-            kde.root
-
+            debxo-kde.root

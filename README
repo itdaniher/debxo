@@ -13,15 +13,15 @@ How to use xodist to generate a Debian KDE image for an OLPC XO:
 
 1.  build the root filesystem,
 
-	sudo ./mkchroot.sh --package-list debxo-kde kde.root
+	sudo ./mkchroot.sh --config-type debxo-kde debxo-kde.root
 
 2.  make the JFFS2 filesystem,
 
-	sudo ./mkjffs2.sh kde.root kde.img
+	sudo ./mkjffs2.sh --config-type debxo-kde debxo-kde.root debxo-kde.img
 
 3.  copy the files to a thumb drive,
 
-	sudo ./mkbootable.sh --output /mnt kde
+	sudo ./mkbootable.sh --output /mnt debxo-kde
 
 4.  ensure the XO is unlocked, by obtaining a Developer Key, and using
 the OpenFirmware command,
@@ -32,8 +32,8 @@ the OpenFirmware command,
 
 6.  insert the thumb drive,
 
-7.  power up, when prompted press Enter, and the image will be copied
-to the NAND flash, and then booted,
+7.  power up, answer the prompt, and the image will be copied to the
+NAND flash, and then booted,
 
 Warning: this erases everything on the XO, including any Developer
 Key, but if you have followed step 4 above that should not matter so
