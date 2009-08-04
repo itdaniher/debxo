@@ -110,11 +110,13 @@ cat <<EOF >${OUTPUT}/boot/olpc.fth
 \ OLPC boot script
 
 visible
+clear-screen
 cr
-." This is a debxo bootable install script." cr
+." This is a xodist bootable install script for the OLPC XO-1." cr
 cr
-." `md5sum ${IMAGE}.img`" cr
-." `md5sum ${IMAGE}.dat`" cr
+." Checksums:" cr
+."     `md5sum ${IMAGE}.img`" cr
+."     `md5sum ${IMAGE}.dat`" cr
 cr
 EOF
 
@@ -124,18 +126,20 @@ case $INTERACTIVE in
 		cat <<EOF >>${OUTPUT}/boot/olpc.fth
 
 \ --no-interactive was used, so we do not prompt
-." Erasing everything here and installing debxo ${IMAGE}" cr
+." Erasing everything here and installing ${IMAGE}" cr
 EOF
 		;;
 	yes|*)
 		cat <<EOF >>${OUTPUT}/boot/olpc.fth
 
 \ --interactive was used, so we prompt before erasing
-." Power off to abort, or" cr
-." press Enter to erase everything here and install debxo ${IMAGE} ?"
-begin
-    key d =
-until
+." Type yes then enter to erase everything here and install ${IMAGE} ? "
+cursor-on
+key  lcc  dup emit  ascii y = not  [if] cr abort [then]
+key  lcc  dup emit  ascii e = not  [if] cr abort [then]
+key  lcc  dup emit  ascii s = not  [if] cr abort [then]
+key       dup emit  d       = not  [if] cr abort [then]
+
 EOF
 		;;
 esac
