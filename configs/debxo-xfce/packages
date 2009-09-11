@@ -34,7 +34,7 @@ xfonts-100dpi
 xfonts-scalable
 xfonts-base
 x11-xserver-utils
-xinit
+nodm/lenny-backports
 xauth
 
 # the desktop stuff
