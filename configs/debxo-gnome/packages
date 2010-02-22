@@ -50,7 +50,7 @@ gnome-volume-manager
 gnome-themes
 gnome-utils
 gconf-editor
-network-manager-gnome
+network-manager-gnome/lenny-backports
 claws-mail
 epiphany-browser
 file-roller

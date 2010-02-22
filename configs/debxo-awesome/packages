@@ -43,7 +43,7 @@ aspell-en
 ttf-liberation
 awesome
 stalonetray
-network-manager-gnome
+network-manager-gnome/lenny-backports
 claws-mail
 epiphany-browser
 file-roller

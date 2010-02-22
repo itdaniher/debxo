@@ -41,7 +41,7 @@ xauth
 menu
 aspell-en
 ttf-liberation
-network-manager-gnome
+network-manager-gnome/lenny-backports
 firefox
 pidgin
 evince

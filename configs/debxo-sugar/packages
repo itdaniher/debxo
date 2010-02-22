@@ -42,7 +42,7 @@ menu
 aspell-en
 big-cursor
 ttf-liberation
-network-manager-gnome
+network-manager-gnome/lenny-backports
 sugar
 sugar-artwork
 sugar-calculate-activity
@@ -54,7 +54,7 @@ sugar-sharedstate-classes
 sugar-sharingtest-activity
 sugar-web-activity
 matchbox
-network-manager
+network-manager/lenny-backports
 sugar-doc
 etoys
 etoys-doc
