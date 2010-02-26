@@ -5,7 +5,7 @@
 # are always installed.
 
 # the backend stuff
-libertas-firmware
+libertas-firmware/lenny-backports
 olpc-xo1-hw/lenny-backports
 initramfs-tools/lenny-backports
 wireless-tools
