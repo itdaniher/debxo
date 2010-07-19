@@ -17,6 +17,13 @@ package_configure_hook()
 	# Any customizations that need to be made after all packages have been
 	# installed should be put here.  $ROOT_DIR should be prefixed to any
 	# paths.
+
+        # configure openntpd (to run w/ -s by default)
+        F=${ROOT_DIR}/etc/default/openntpd
+        if [ -f ${F} ]; then
+                sed --in-place "s/^.*DAEMON_OPTS=/DAEMON_OPTS=/" ${F}
+        fi
+
 }
 
 cleanup_chroot_hook()

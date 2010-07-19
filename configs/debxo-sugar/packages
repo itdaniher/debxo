@@ -11,7 +11,6 @@ initramfs-tools/lenny-backports
 wireless-tools
 alsa-utils
 console-tools
-openntpd
 
 # the silly i-always-use-this-shit stuff
 less
