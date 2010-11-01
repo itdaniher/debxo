@@ -3,5 +3,4 @@
 # <file system>	<mount point>	<type>	<options>	<dump>	<pass>
 proc		/proc		proc	defaults	0	0	# <partition size in MB>
 LABEL=DebXO	/		ext3	errors=remount-ro 0	1	# 1024
-none		/ofw		promfs	defaults	0	0 #x
 tmpfs		/var/cache/apt/cache tmpfs defaults	0	0
