@@ -5,9 +5,9 @@
 # are always installed.
 
 # the backend stuff
-libertas-firmware/lenny-backports
-olpc-xo1-hw/lenny-backports
-initramfs-tools/lenny-backports
+libertas-firmware
+olpc-xo1-hw
+initramfs-tools
 wireless-tools
 alsa-utils
 console-tools
@@ -28,12 +28,12 @@ xserver-xorg-core
 xserver-xorg-input-kbd
 xserver-xorg-input-mouse
 xserver-xorg-input-evdev
-xserver-xorg-video-geode/lenny-backports
+xserver-xorg-video-geode
 xfonts-100dpi
 xfonts-scalable
 xfonts-base
 x11-xserver-utils
-nodm/lenny-backports
+nodm
 xauth
 
 # the desktop stuff
