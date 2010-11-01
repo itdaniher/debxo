@@ -70,6 +70,11 @@ olpc_battery
 msr
 EOF
 
+	# UBIFS needs this
+	cat >>${ROOT_DIR}/etc/initramfs-tools/modules<<EOF
+ubi mtd=root
+EOF
+
 	# install some custom packages that aren't on mirrors.  ugly hack!
 	k="http://lunge.mit.edu/~dilinger/debxo-0.2/ofw-config_0.1_all.deb 
  http://lunge.mit.edu/~dilinger/debxo-0.6/linux-image-2.6.36+_2.6.36+-14_i386.deb"
