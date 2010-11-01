@@ -14,8 +14,8 @@ then
 " ro ubi.mtd=root root=ubi:root rootfstype=ubifs video=lxfb fbcon=font:SUN12x22" to boot-file
 game-key-mask h# 80 and if
 	\ boot from backup kernel
-	" ${DN}\vmlinuz.old" expand$ to boot-device
-	" ${DN}\initrd.img.old" expand$ to ramdisk
+	" ${DN}\vmlinuz.bak" expand$ to boot-device
+	" ${DN}\initrd.img.bak" expand$ to ramdisk
 else
 	\ boot from regular kernel
 	" ${DN}\vmlinuz" expand$ to boot-device
