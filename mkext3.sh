@@ -18,6 +18,7 @@
 
 IMG_NAME=""
 ROOT_DIR=""
+SKIP_GRUB="n"
 
 . ./functions.sh
 
@@ -201,7 +202,9 @@ mk_ext3_fs()
 	
 	# populate the filesystem
 	cp -ra "$root_dir"/* "$mount_point_root" || true
-	grub_install "$img" "$mount_point_root"
+	if [ "$SKIP_GRUB" != "y" ]; then
+		grub_install "$img" "$mount_point_root"
+	fi
 
 	# umount the filesystem
 	sed -ne 's/^LABEL=//p' configs/${CONFIG_TYPE}/fstab-ext3 | \
@@ -232,6 +235,7 @@ usage()
 	echo "Options:" 1>&2
 	echo "  --config-type <config>    directory name in configs/ to use" 1>&2
 	echo "  --help                    display this help screen" 1>&2
+	echo "  --skip-grub               don't install GRUB on image" 1>&2
 	echo "" 1>&2
 	exit 1
 }
@@ -246,6 +250,9 @@ do
 			exit 2
 		}
 		shift
+		;;
+	--skip-grub)
+		SKIP_GRUB="y"
 		;;
 	--help|-h)
 		usage
@@ -277,7 +284,10 @@ if [ ! -d "$ROOT_DIR" ]; then
 	usage
 fi
 
-check_for_cmds losetup parted mke2fs tune2fs grub || exit 1
+check_for_cmds losetup parted mke2fs tune2fs || exit 1
+if [ "$SKIP_GRUB" != "y" ]; then
+	check_for_cmds grub || exit 1
+fi
 
 # create image's /etc/fstab
 if [ ! -f ./configs/${CONFIG_TYPE}/fstab-ext3 ]; then
