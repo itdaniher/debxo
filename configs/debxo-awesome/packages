@@ -29,6 +29,7 @@ xserver-xorg-input-kbd
 xserver-xorg-input-synaptics
 xserver-xorg-input-evdev
 xserver-xorg-video-geode
+xserver-xorg-video-openchrome
 xfonts-100dpi
 xfonts-scalable
 xfonts-base
