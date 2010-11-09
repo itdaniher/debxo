@@ -27,7 +27,7 @@ links2
 xserver-xephyr
 xserver-xorg-core
 xserver-xorg-input-kbd
-xserver-xorg-input-mouse
+xserver-xorg-input-synaptics
 xserver-xorg-input-evdev
 xserver-xorg-video-geode
 xfonts-100dpi
