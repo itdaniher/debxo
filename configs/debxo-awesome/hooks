@@ -44,9 +44,6 @@ Dir {
 	};
 };
 EOF
-
-	# add archive key for lenny-backports
-	wget -O - http://backports.org/debian/archive.key | (chroot ${ROOT_DIR} apt-key add -)
 }
 
 package_configure_hook()
