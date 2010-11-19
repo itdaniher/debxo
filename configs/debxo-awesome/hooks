@@ -72,8 +72,18 @@ EOF
 		rm -f ${ROOT_DIR}/${pkg}
 	done
 
-	# No longer a need for xorg.conf
-	rm -f ${ROOT_DIR}/etc/X11/xorg.conf
+	# Create an Xorg.conf that overrides the default DPI (x bug workaround).
+	cat >${ROOT_DIR}/etc/X11/xorg.conf<<EOF
+Section "Monitor"
+	Identifier "Monitor0"
+	DisplaySize 200 150
+EndSection
+
+Section "Screen"
+	Identifier "Default Screen"
+	Monitor "Monitor0"
+EndSection
+EOF
 
 	# configure nodm
 	F=${ROOT_DIR}/etc/default/nodm
