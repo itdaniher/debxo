@@ -22,8 +22,6 @@ customize_chroot_hook()
 	# Any customizations that need to be made to the chroot after the base system
 	# has been installed (but prior to custom package installation) should be
 	# put here.  $ROOT_DIR should be prefixed to any paths.
-	
-	mkdir ${ROOT_DIR}/ofw
 
 	# OFW needs this to boot w/ partitions
 	ln -s . ${ROOT_DIR}/boot/boot
