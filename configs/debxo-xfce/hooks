@@ -88,11 +88,6 @@ EOF
 	# No longer a need for xorg.conf
 	rm -f ${ROOT_DIR}/etc/X11/xorg.conf
 
-	# key bindings/mappings
-	if [ -d ${ROOT_DIR}/usr/share/hal/fdi/information/10freedesktop/ ]; then
-		cp 30-keymap-olpc.fdi ${ROOT_DIR}/usr/share/hal/fdi/information/10freedesktop/
-	fi
-
 	# configure nodm
 	F=${ROOT_DIR}/etc/default/nodm
 	if [ -f ${F} ]; then
