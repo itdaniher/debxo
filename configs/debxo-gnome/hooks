@@ -27,21 +27,10 @@ customize_chroot_hook()
 	# OFW needs this to boot w/ partitions
 	ln -s . ${ROOT_DIR}/boot/boot
 	
-	# Apt can't deal w/ jffs2's lack of mmap, so we keep apt's cache on tmpfs
-	# (see <http://bugs.debian.org/314334>).
-	mkdir ${ROOT_DIR}/var/cache/apt/cache
-	mount -t tmpfs tmpfs ${ROOT_DIR}/var/cache/apt/cache
-	# XOs are slow and small; don't use pdiffs, don't install recommends, and
-	# work around lack of mmap.
+	# XOs are slow and small; don't use pdiffs and don't install recommends
 cat >${ROOT_DIR}/etc/apt/apt.conf<<EOF
 Acquire::Pdiffs "false";
 APT::Install-Recommends "false";
-Dir {
-	Cache "var/cache/apt/" {
-		srcpkgcache "cache/srcpkgcache.bin";
-		pkgcache "cache/pkgcache.bin";
-	};
-};
 EOF
 }
 
@@ -111,6 +100,4 @@ cleanup_chroot_hook()
 	# Any customizations that need to be made after the chroot creation is
 	# complete should be put here.  $ROOT_DIR should be prefixed to any
 	# paths.
-
-	umount ${ROOT_DIR}/var/cache/apt/cache
 }
