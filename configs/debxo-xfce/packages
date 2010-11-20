@@ -21,7 +21,6 @@ bzip2
 info
 manpages-dev
 rsync
-links2
 
 # X
 xserver-xorg-core
@@ -42,20 +41,14 @@ menu
 aspell-en
 ttf-liberation
 network-manager-gnome
-firefox
 pidgin
-evince
-xpdf
-totem
+evince-gtk
+parole
 gstreamer0.10-ffmpeg
 gstreamer0.10-plugins-bad
 gstreamer0.10-plugins-ugly
 xfce4
-xfce4-terminal
-abiword
-eog
+xfce4-goodies
 gksu
 synaptic
-sugar-artwork
-file-roller
 epiphany-browser
