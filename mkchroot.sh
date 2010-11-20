@@ -167,13 +167,13 @@ package_configure_hook "${ROOT_DIR}"
 rm -rf ${ROOT_DIR}/home/*; 	# i have no idea what's adding this crap...
 (chroot ${ROOT_DIR} useradd -s /bin/bash --create-home ${DEFUSER})
 (chroot ${ROOT_DIR} passwd -d ${DEFUSER})
-(chroot ${ROOT_DIR} adduser ${DEFUSER} cdrom)
-(chroot ${ROOT_DIR} adduser ${DEFUSER} audio)
-(chroot ${ROOT_DIR} adduser ${DEFUSER} video)
-(chroot ${ROOT_DIR} adduser ${DEFUSER} plugdev)
-(chroot ${ROOT_DIR} adduser ${DEFUSER} netdev)
-(chroot ${ROOT_DIR} adduser ${DEFUSER} powerdev)
-(chroot ${ROOT_DIR} adduser ${DEFUSER} floppy)
+(chroot ${ROOT_DIR} adduser ${DEFUSER} cdrom || true)
+(chroot ${ROOT_DIR} adduser ${DEFUSER} audio || true)
+(chroot ${ROOT_DIR} adduser ${DEFUSER} video || true)
+(chroot ${ROOT_DIR} adduser ${DEFUSER} plugdev || true)
+(chroot ${ROOT_DIR} adduser ${DEFUSER} netdev || true)
+(chroot ${ROOT_DIR} adduser ${DEFUSER} powerdev || true)
+(chroot ${ROOT_DIR} adduser ${DEFUSER} floppy || true)
 echo "${DEFUSER} ALL=(ALL) NOPASSWD: ALL" >> ${ROOT_DIR}/etc/sudoers
 
 # override sources.list with shipping version
