@@ -174,6 +174,7 @@ rm -rf ${ROOT_DIR}/home/*; 	# i have no idea what's adding this crap...
 (chroot ${ROOT_DIR} adduser ${DEFUSER} netdev || true)
 (chroot ${ROOT_DIR} adduser ${DEFUSER} powerdev || true)
 (chroot ${ROOT_DIR} adduser ${DEFUSER} floppy || true)
+(chroot ${ROOT_DIR} adduser ${DEFUSER} fuse || true)
 echo "${DEFUSER} ALL=(ALL) NOPASSWD: ALL" >> ${ROOT_DIR}/etc/sudoers
 
 # override sources.list with shipping version
