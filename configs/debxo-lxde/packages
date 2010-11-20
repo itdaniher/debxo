@@ -21,7 +21,6 @@ bzip2
 info
 manpages-dev
 rsync
-links2
 
 # X
 xserver-xorg-core
@@ -41,9 +40,11 @@ xauth
 menu
 aspell-en
 ttf-liberation
-big-cursor
+wicd-gtk
+epdfview
 lxde
-lxnm
-lxsession-lite
-lxterminal
-netsurf
+gvfs-backends
+gvfs-fuse
+policykit-1
+chromium-browser
+fotoxx
