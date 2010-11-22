@@ -101,13 +101,15 @@ EOF
 
 	# configure wicd
 	F=${ROOT_DIR}/etc/wicd/manager-settings.conf
-	if [ -f ${F} ]; then
-		sed --in-place "s/wireless_interface =.*$/wireless_interface = wlan0/" ${F}
-		sed --in-place "s/wired_inferface =.*$/wired_interface = eth0/" ${F}
-		# auto-connect to wired
-		sed --in-place "s/prefer_wired =.*$/prefer_wired = True/" ${F}
-		sed --in-place "s/wired_connect_mode =.*$/wired_connect_mode = 0/" ${F}
-	fi
+	# there's no actual config file in the package; it's autocreated or something.  ugh.
+	cp wicd-manager-settings.conf ${F}
+#	if [ -f ${F} ]; then
+#		sed --in-place "s/wireless_interface =.*$/wireless_interface = wlan0/" ${F}
+#		sed --in-place "s/wired_inferface =.*$/wired_interface = eth0/" ${F}
+#		# auto-connect to wired
+#		sed --in-place "s/prefer_wired =.*$/prefer_wired = True/" ${F}
+#		sed --in-place "s/wired_connect_mode =.*$/wired_connect_mode = 0/" ${F}
+#	fi
 
 }
 
