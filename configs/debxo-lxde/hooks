@@ -85,13 +85,6 @@ Section "Screen"
 EndSection
 EOF
 
-	# configure default lxpanel size (it's awfully small otherwise)
-	F=${ROOT_DIR}/usr/share/lxpanel/profile/default/panels/panel
-	if [ -f ${F} ]; then
-		sed --in-place "s/height=26/height=40/" ${F}
-		sed --in-place "s/^}$/    iconsize=40\n}/" ${F}
-	fi
-
 	# configure nodm
 	F=${ROOT_DIR}/etc/default/nodm
 	if [ -f ${F} ]; then
