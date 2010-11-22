@@ -40,7 +40,7 @@ xauth
 menu
 aspell-en
 ttf-liberation
-network-manager-gnome
+wicd-gtk
 pidgin
 evince-gtk
 parole
@@ -51,4 +51,4 @@ xfce4
 xfce4-goodies
 gksu
 synaptic
-epiphany-browser
+midori
