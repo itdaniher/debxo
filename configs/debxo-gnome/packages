@@ -21,7 +21,6 @@ bzip2
 info
 manpages-dev
 rsync
-links2
 
 # X
 xserver-xorg-core
@@ -39,25 +38,8 @@ x11-xserver-utils
 menu
 aspell-en
 ttf-liberation
-gdm
-gnome-core
-gnome-backgrounds
-gnome-power-manager
-gnome-media
-gnome-mount
-gnome-system-tools
-gnome-volume-manager
-gnome-themes
-gnome-utils
-gconf-editor
+gnome-desktop-environment
 network-manager-gnome
-claws-mail
-epiphany-browser
-file-roller
-netsurf
-pidgin
-evince
-xpdf
 totem
 gstreamer0.10-ffmpeg
 gstreamer0.10-plugins-bad

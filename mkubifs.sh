@@ -102,7 +102,7 @@ image=${out}.pre
 # Volume ID in UBI image
 vol_id=0
 # Volume size
-vol_size=650000KiB
+vol_size=800000KiB
 # Allow for dynamic resize
 vol_type=dynamic
 # Volume name
