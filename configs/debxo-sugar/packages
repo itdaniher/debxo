@@ -21,7 +21,6 @@ bzip2
 info
 manpages-dev
 rsync
-links2
 
 # X
 xserver-xephyr
@@ -43,20 +42,15 @@ aspell-en
 big-cursor
 ttf-liberation
 network-manager-gnome
-sugar
-sugar-artwork
-sugar-calculate-activity
-sugar-chat-activity
-sugar-journal-activity
+sucrose-0.88
+education-desktop-sugar
+#sugar-calculate-activity -- not yet ported to 0.88?
 sugar-pippy-activity
-sugar-presence-service
-sugar-sharedstate-classes
-sugar-sharingtest-activity
-sugar-web-activity
-matchbox
-network-manager
-sugar-doc
+#sugar-write-activity-0.86  -- not yet in squeeze; needs to be unblocked
+sugar-chat-activity-0.86
+sugar-physics-activity
+sugar-connect-activity
+sugar-jigsawpuzzle-activity
+sugar-memorize-activity
 etoys
 etoys-doc
-squeak-vm
-unzip
