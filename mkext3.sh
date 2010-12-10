@@ -65,7 +65,7 @@ create_bootable_img()
 	# first, create a sparse image
 	minus_size=$(($size * 6 / 100))
 	size=$(($size - $minus_size))
-	dd if=/dev/zero of=$img bs=1M count=1 seek=$(($size - 1))
+	dd if=/dev/zero of=$img bs=1M count=1 seek=$size
 
 	# fill in the partition table
 	parted -s "$img" "mklabel msdos"
