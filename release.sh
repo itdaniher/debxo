@@ -8,12 +8,12 @@ for f in configs/debxo-*; do
 deb http://localhost:9999/security squeeze/updates main contrib non-free
 deb http://localhost:9999/backports squeeze-backports main contrib non-free" \
 			debxo-${desktop}
-	./mkubifs.sh --config-type debxo-${desktop} debxo-${desktop} ${desktop}.img
-	./mkext3.sh --config-type debxo-${desktop} debxo-${desktop} \
+	[ -f ./configs/debxo-${desktop}/fstab-ubifs ] && ./mkubifs.sh --config-type debxo-${desktop} debxo-${desktop} ${desktop}.img
+	[ -f ./configs/debxo-${desktop}/fstab-ext3 ] && ./mkext3.sh --config-type debxo-${desktop} debxo-${desktop} \
 			debxo-${desktop}.ext3.img
-	gzip debxo-${desktop}.ext3.img
+	[ -f debxo-${desktop}.ext3.img ] && gzip debxo-${desktop}.ext3.img
 
 	mkdir -p ext3 nand
-	mv debxo-${desktop}.ext3.img.gz ext3
-	mv ${desktop}.img ${desktop}.dat nand
+	[ -f debxo-${desktop}.ext3.img.gz ] && mv debxo-${desktop}.ext3.img.gz ext3
+	[ -f ${desktop}.img ] && mv ${desktop}.img ${desktop}.dat nand
 done

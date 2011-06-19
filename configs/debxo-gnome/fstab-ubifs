@@ -1,6 +1,0 @@
-# /etc/fstab: static file system information 
-#
-# <file system>	<mount point>	<type>	<options>	<dump>	<pass>
-proc		/proc		proc	defaults	0	0	# <partition size in MB>
-mtd:boot	/boot		jffs2	defaults,noatime 1	1	# 50
-ubi:root	/		ubifs	defaults,noatime 1	1
