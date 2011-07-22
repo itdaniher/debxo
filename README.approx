@@ -11,8 +11,9 @@ Solution: set up the approx package to cache these packages.
 
 debian          http://http.us.debian.org/debian
 security        http://security.debian.org/
+backports       http://backports.debian.org/debian-backports
 
-3.  restart approx,
+3.  restart approx (not required when running approx from inetd),
 
 	% sudo /etc/init.d/approx restart
 
@@ -20,8 +21,9 @@ security        http://security.debian.org/
 the --local-apt-mirror option, like this:
 
         sudo ./mkchroot.sh \
-            --config-type debxo-kde \
+            --config-type debxo-lxde \
             --local-apt-mirror \
-"deb http://localhost:9999/debian lenny main contrib non-free
-deb http://localhost:9999/security lenny/updates main contrib non-free" \
-            debxo-kde.root
+"deb http://localhost:9999/debian squeeze main contrib non-free
+deb http://localhost:9999/security squeeze/updates main contrib non-free
+deb http://localhost:9999/backports squeeze-backports main contrib non-free" \
+            debxo-lxde
