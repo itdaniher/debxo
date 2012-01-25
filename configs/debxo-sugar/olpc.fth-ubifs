@@ -11,7 +11,7 @@
   then
 then
 
-" ro ubi.mtd=root root=ubi:root rootfstype=ubifs video=lxfb fbcon=font:SUN12x22" to boot-file
+" ro redboot.directory=0 ubi.mtd=root root=ubi:root rootfstype=ubifs video=lxfb fbcon=font:SUN12x22" to boot-file
 game-key-mask h# 80 and if
 	\ boot from backup kernel
 	" ${DN}\vmlinuz.bak" expand$ to boot-device
