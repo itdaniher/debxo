@@ -5,8 +5,9 @@
 # are always installed.
 
 # the backend stuff
-libertas-firmware
-olpc-xo1-hw
+firmware-libertas/squeeze-backports
+olpc-xo1-hw/squeeze-backports
+linux-image-486/squeeze-backports
 initramfs-tools
 wireless-tools
 alsa-utils
