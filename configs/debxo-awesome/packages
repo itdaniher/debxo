@@ -8,7 +8,7 @@
 firmware-libertas/squeeze-backports
 olpc-xo1-hw/squeeze-backports
 linux-image-486/squeeze-backports
-initramfs-tools
+olpc-kbdshim/squeeze-backports
 wireless-tools
 alsa-utils
 console-tools
