@@ -60,8 +60,7 @@ ubi mtd=root
 EOF
 
 	# install some custom packages that aren't on mirrors.  ugly hack!
-	k="http://lunge.queued.net/~dilinger/debxo-0.2/ofw-config_0.1_all.deb 
- http://lunge.queued.net/~dilinger/debxo-0.6/linux-image-2.6.37-rc4+_2.6.37-rc4+-56_i386.deb"
+	k="http://lunge.queued.net/~dilinger/debxo-0.2/ofw-config_0.1_all.deb"
 	mkdir -p cache
 	for i in $k; do
 		pkg=$(basename ${i})
