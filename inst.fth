@@ -5,17 +5,12 @@
       dup " #blocks" rot $call-method           ( ih #blocks )
       ?dup 0<> if
          \ we're assuming a block size of 512 bytes
-         d# 512 um*                             ( ih #bytes )
-         d# 1,000,000 um/mod                    ( ih rem #MB )
-         rot close-dev swap drop                ( #MB )
+         d# 512 um*                             ( ih bytes.lo bytes.hi )
       else
-\ TODO
-         drop
-         0
-\      dup " block-size" rot $call-method        ( ih  size x )
-\      rot close-dev drop                        ( size.lo )
-\      d# 20 >>                                  ( #MB )
+         dup " size" rot $call-method           ( ih size.lo size.hi )
       then
+      d# 1,000,000 um/mod                       ( ih rem #MB )
+      rot close-dev nip                         ( #MB )
    else
       0                                         ( #MB )
    then
@@ -121,17 +116,6 @@ d# 128 buffer: verifystr
       false
    then
 ;
-
-\ : disk-size  ( devspec$ -- #MB )
-\   open-dev ?dup 0<> if                         ( ih )
-\      dup " size" rot $call-method              ( ih size.lo size.hi )
-\      rot close-dev drop                        ( size.lo )
-\      d# 20 >>                                  ( #MB )
-\      \ fuck your signed 32bit division..    d# 100000 /                               ( #MB ).
-\   else
-\      0                                         ( #MB )
-\   then
-\ ;
 
 : debxo-find-targets  ( -- help0$ 'func0 'icon0 ... helpk$ 'funck 'iconk )
    0 to nr-targets
