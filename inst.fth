@@ -1,17 +1,89 @@
 \ DebXO installer script
 
+: disk-size  ( devspec$ -- #MB )
+   open-dev ?dup 0<> if                         ( ih )
+      dup " #blocks" rot $call-method           ( ih #blocks )
+      ?dup 0<> if
+         \ we're assuming a block size of 512 bytes
+         d# 512 um*                             ( ih #bytes )
+         d# 1,000,000 um/mod                    ( ih rem #MB )
+         rot close-dev swap drop                ( #MB )
+      else
+\ TODO
+         drop
+         0
+\      dup " block-size" rot $call-method        ( ih  size x )
+\      rot close-dev drop                        ( size.lo )
+\      d# 20 >>                                  ( #MB )
+      then
+   else
+      0                                         ( #MB )
+   then
+;
+
+: target-big-enough?  ( devspec$ -- flag )
+   disk-size                                    ( #MB )
+   \ we only support devices >= 1GB
+   d# 1000 u< if
+      " Installation target too small, must be at least 1GB.  Aborting..."
+      dialog-alert
+      false                                     ( flag )
+   else
+      true                                      ( flag )
+   then
+;
+
+d# 128 buffer: verifystr
+
+: user-verified?  ( tgt$ -- flag )
+   \ ensure the user *actually* wanted to reformat the device..
+   " WARNING: this will overwrite all data on " ( tgt$ str$ )
+   verifystr pack $cat
+   " .  Are you sure that you want to do this?" ( str2$ )
+   verifystr $cat
+   verifystr count                              ( finalstr$ )
+   dialog-no                                    ( flag )
+   dup invert if
+      " Installation cancelled."
+      dialog-alert
+   then                                         ( flag )
+;
+ 
+: verify-target  ( tgt$ devspec$ -- )
+   \ XXX: For some reason refresh isn't called after a dialog-alert
+   \ (or menu item callback).  This means the menu display is incorrect
+   \ until go-vertical is called.  Calling refresh manually here doesn't
+   \ work... so for now, kill the menu and restart it later.
+   menu-done                                    ( tgt$ devspec$ )
+
+   target-big-enough? -rot                      ( flag tgt$ )
+   user-verified? and if
+      true
+   else
+      \ installation cancelled/failed, redisplay menu
+      (menu)
+      false
+   then
+;
+
 : choose-nand-item
-   menu-done
+   " the internal NAND storage" " /nandflash" verify-target if
+      " installing!" dialog-alert
+   then
    ." Nand" cr
 ;
 
 : choose-emmc-item
-   menu-done
+   " the internal MMC device" " int:0" verify-target if
+      " installing!" dialog-alert
+   then
    ." EMMC" cr
 ;
 
 : choose-sd-item
-   menu-done
+   " this SD card" " ext:0" verify-target if
+      " installing!" dialog-alert
+   then
    ." SD" cr
 ;
 
@@ -47,26 +119,6 @@
       true
    else
       false
-   then
-;
-
-: disk-size  ( devspec$ -- #MB )
-   open-dev ?dup 0<> if                         ( ih )
-      dup " #blocks" rot $call-method           ( ih #blocks )
-      ?dup 0<> if
-         \ we're assuming a block size of 512 bytes
-         d# 512 um*                             ( ih #bytes )
-         d# 1,000,000 um/mod                    ( ih rem #MB )
-         rot close-dev swap drop                ( #MB )
-      else
-         drop
-         0  \ TODO
-\      dup " block-size" rot $call-method        ( ih  size x )
-  \    rot close-dev drop                        ( size.lo )
-   \   d# 20 >>                                  ( #MB )
-      then
-   else
-      0                                         ( #MB )
    then
 ;
 
